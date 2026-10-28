@@ -1,0 +1,2012 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fff7e0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Exercice de formation : écrans de triage d'un dossier informatisé, patients fictifs. Ce n'est pas le système CURY.">
+<meta property="og:title" content="Exercice de triage – EMR (données fictives)">
+<meta property="og:description" content="Exercice de formation avec des patients fictifs. Ce n'est pas le système CURY.">
+<title>Exercice de triage – EMR (données fictives)</title>
+<style>
+:root{
+  --primary:#4c6ef5;--primary-h:#3d5ee0;--primary-l:#e5eafe;
+  --success:#71dd37;--success-t:#3f8f17;--success-l:#e8fadf;
+  --info:#03c3ec;--info-t:#0381a0;--info-l:#d7f5fc;
+  --warning:#ffab00;--warning-t:#a86f00;--warning-l:#fff2d6;
+  --danger:#ff3e1d;--danger-t:#d22c0e;--danger-l:#ffe0db;
+  --body:#5d6b79;--heading:#3a4754;--muted:#97a3b0;
+  --bg:#f5f5f9;--card:#fff;--border:#d9dee3;--shadow:0 2px 6px rgba(67,89,113,.12);
+  --train-bg:#fff7e0;--train-bd:#e8c46a;--train-t:#5c4300;--train-strong:#8a5a00;
+  --tbh:44px;
+  --font:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);font-size:15px;line-height:1.47;color:var(--body);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,h4,h5,h6{color:var(--heading);margin:0;font-weight:500}
+.muted{color:var(--muted)}
+svg.ic{width:20px;height:20px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+svg.icf{fill:currentColor;stroke:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* bande d'exercice */
+#trainbar{position:sticky;top:0;z-index:70;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 14px;background:var(--train-bg);border-bottom:2px solid var(--train-bd);color:var(--train-t);font-size:13.5px}
+.tb-tag{display:inline-block;background:var(--train-strong);color:#fff;font-weight:700;font-size:12px;letter-spacing:.08em;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.tb-case{font-weight:600}
+.tb-sp{flex:1}
+.tbtn{border:1px solid var(--train-bd);background:#fff;color:var(--train-t);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:13.5px;line-height:1.35}
+.tbtn:hover{background:#fff1c7}
+.tbtn.on{background:var(--train-strong);border-color:var(--train-strong);color:#fff}
+.tb-lang{display:inline-flex}
+.tb-lang .tbtn:first-child{border-radius:6px 0 0 6px}
+.tb-lang .tbtn:last-child{border-radius:0 6px 6px 0;margin-left:-1px}
+
+/* mise en page */
+#layout{display:flex;align-items:flex-start}
+#menu{width:260px;flex:0 0 260px;background:#fff;box-shadow:0 0 0 1px rgba(67,89,113,.05),0 2px 6px rgba(67,89,113,.12);position:sticky;top:var(--tbh);height:calc(100vh - var(--tbh));overflow-y:auto;z-index:30}
+#page{flex:1 1 auto;min-width:0;padding:0 24px;min-height:calc(100vh - var(--tbh));display:flex;flex-direction:column}
+#content{flex:1 0 auto;padding:4px 0 20px}
+#footer{padding:12px 0 18px;font-size:14px;color:var(--body)}
+#casePanel{display:none;width:360px;flex:0 0 360px;background:#fffdf6;border-left:3px solid var(--train-bd);position:sticky;top:var(--tbh);height:calc(100vh - var(--tbh));overflow-y:auto;z-index:40}
+body.case-open #casePanel{display:block}
+
+/* menu */
+.brand{display:flex;align-items:center;gap:12px;height:70px;padding:0 24px}
+.logo-mini{font-weight:800;font-size:12px;color:#b0201a;border-bottom:3px solid #2848a8;line-height:1;padding-bottom:2px}
+.brand-t{font-size:30px;font-weight:700;color:var(--heading)}
+.menu{list-style:none;margin:6px 0 20px;padding:0 14px}
+.menu li{margin:2px 0}
+.menu a{display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:6px;color:var(--heading);cursor:pointer;text-decoration:none}
+.menu a:hover{background:#f2f3f5}
+.menu .chev svg.ic{width:16px;height:16px}
+.menu .chev{margin-left:auto;display:inline-flex;color:var(--muted)}
+.menu li.active > a{background:var(--primary-l);color:var(--primary)}
+.menu .sub{list-style:none;margin:2px 0 6px;padding:0}
+.menu .sub a{padding:8px 14px 8px 46px;position:relative}
+.menu .sub a::before{content:'';position:absolute;left:25px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#b4bdc6}
+.menu .sub a.active{font-weight:600}
+.menu .sub a.active::before{background:var(--primary);box-shadow:0 0 0 3px var(--primary-l);width:8px;height:8px;margin-top:-4px;left:24px}
+
+/* barre du haut */
+#navbar{margin:14px 0 10px;min-height:62px;background:#fff;border-radius:8px;box-shadow:var(--shadow);display:flex;align-items:center;padding:0 16px;gap:12px;position:relative;z-index:25}
+.nb-burger{display:none;border:0;background:none;padding:6px;cursor:pointer;color:var(--heading)}
+.nb-search{position:relative;flex:1;display:flex;align-items:center;gap:8px;min-width:0;color:var(--heading)}
+.nb-search input{border:0;outline:0;background:transparent;width:100%;font-size:15.5px;color:var(--heading);padding:8px 0}
+.nb-search input::placeholder{color:#97a3b0}
+.nb-icons{display:flex;align-items:center;gap:12px;position:relative}
+.nb-ic{border:0;background:none;padding:4px;cursor:pointer;color:var(--heading);display:inline-flex}
+.nb-ic svg.ic{width:23px;height:23px}
+.avatar{position:relative;border:0;background:none;padding:0;cursor:pointer;width:40px;height:40px;display:inline-flex}
+.avatar svg{width:40px;height:40px}
+.avatar .dot{position:absolute;right:1px;bottom:1px;width:10px;height:10px;border-radius:50%;background:var(--success);box-shadow:0 0 0 2px #fff}
+.dropdown{position:absolute;right:0;top:calc(100% + 10px);background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(67,89,113,.22);min-width:250px;padding:8px 0;z-index:60}
+.dropdown[hidden]{display:none}
+.dd-item{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;color:var(--heading);border:0;background:none;width:100%;text-align:left}
+.dd-item:hover{background:#f2f3f5}
+.dd-head{padding:6px 18px 10px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.dd-head b{display:block;color:var(--heading)}
+.dd-head small{color:var(--body)}
+.nb-drop{position:absolute;left:0;right:0;top:calc(100% + 12px);background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(67,89,113,.22);z-index:60;max-height:300px;overflow:auto}
+.nb-drop[hidden]{display:none}
+.nb-drop div{padding:9px 16px;cursor:pointer;color:var(--heading)}
+.nb-drop div:hover{background:#f2f3f5}
+.nb-drop .msg{cursor:default;color:var(--body)}
+
+/* titres de page */
+.pg-head{display:flex;align-items:center;gap:12px;margin:8px 0 16px;flex-wrap:wrap}
+.bc{font-size:1.45rem;font-weight:500;color:var(--heading)}
+.bc .muted{font-weight:400}
+.pg-head .sp{flex:1}
+
+/* boutons */
+.btn{border:0;border-radius:6px;padding:9px 18px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1.3;font-size:15px;text-decoration:none}
+.btn svg.ic{width:18px;height:18px}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 2px 4px rgba(76,110,245,.35)}
+.btn-primary:hover{background:var(--primary-h)}
+.btn-info{background:var(--info);color:#fff;box-shadow:0 2px 4px rgba(3,195,236,.35)}
+.btn-warning{background:var(--warning);color:#fff;box-shadow:0 2px 4px rgba(255,171,0,.35)}
+.btn-success{background:var(--success);color:#fff;box-shadow:0 2px 4px rgba(113,221,55,.35)}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--body)}
+.btn-lab{background:#eceef1;color:#697a8d}
+.btn[disabled]{background:#eceef1;color:#a1acb8;box-shadow:none;cursor:default}
+.btn-group{display:inline-flex}
+.btn-group .btn{border-radius:0}
+.btn-group .btn:first-child{border-radius:6px 0 0 6px}
+.btn-group .btn:last-child{border-radius:0 6px 6px 0}
+
+/* cartes et alertes */
+.card{background:var(--card);border-radius:8px;box-shadow:var(--shadow);margin-bottom:20px}
+.alert-info{display:flex;gap:12px;align-items:flex-start;background:var(--info-l);color:#0a86a7;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14.5px}
+.alert-info b{color:#07708c}
+.alert-info .ic{margin-top:1px}
+.badge{display:inline-block;font-size:12px;font-weight:600;line-height:1;padding:5px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap}
+.bl-success{background:var(--success-l);color:var(--success-t)}
+.bl-danger{background:var(--danger-l);color:var(--danger-t)}
+.bl-warning{background:var(--warning-l);color:var(--warning-t)}
+.bl-info{background:var(--info-l);color:var(--info-t)}
+.train-note{background:var(--train-bg);border:1px solid var(--train-bd);color:var(--train-t);border-radius:6px;padding:8px 12px;font-size:14px;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;line-height:1.4}
+.train-note .tb-tag{font-size:11px;padding:2px 6px}
+.train-note.wide{margin:0 0 18px}
+.linkbtn{border:0;background:none;padding:0;color:var(--train-strong);text-decoration:underline;cursor:pointer;font-weight:600;font-size:inherit}
+.s2-list li.s2-train{background:var(--train-bg);color:var(--train-t);border-top:1px solid var(--train-bd);cursor:default}
+.reg-ok{background:var(--success-l);color:var(--success-t);border-radius:8px;padding:14px 16px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.reg-ok .sp{flex:1}
+.reg-err{color:var(--danger-t);font-size:14px;margin-top:2px}
+.resume-note{background:var(--primary-l);color:var(--primary-h);border-radius:6px;padding:8px 14px;margin:0 0 14px;font-size:14.5px}
+
+/* assistant (wizard) */
+.wz-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px 2px;padding:18px 20px;border-bottom:1px solid var(--border)}
+.step{display:flex;align-items:center;gap:12px;border:0;background:none;cursor:pointer;padding:4px 6px;text-align:left;border-radius:6px}
+.step-n{width:40px;height:40px;flex:0 0 40px;border-radius:6px;background:#eceef1;color:#8592a3;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500}
+.step-t{display:block;color:var(--heading);font-weight:500;font-size:15.5px;line-height:1.2}
+.step-s{display:block;color:var(--muted);font-size:13.5px;line-height:1.3}
+.step.act .step-n{background:var(--primary);color:#fff;box-shadow:0 2px 5px rgba(76,110,245,.45)}
+.step.act .step-t{color:var(--primary)}
+.step.done .step-n{background:var(--primary-l);color:var(--primary)}
+.wz-sep{color:var(--primary);display:inline-flex;margin:0 4px}
+.wz-sep svg.ic{width:18px;height:18px}
+.wz-body{padding:20px 22px 22px}
+.st-head{margin-bottom:18px}
+.st-head h6{font-size:16px;font-weight:500;margin:0}
+.st-head small{color:var(--body);font-size:14px}
+.st-nav{display:flex;align-items:center;gap:10px;margin-top:22px;flex-wrap:wrap}
+.st-nav .sp{flex:1}
+
+/* formulaires */
+.lbl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;font-weight:500;color:var(--heading);text-transform:uppercase;letter-spacing:.02em;margin-bottom:6px;min-height:20px}
+.fld{margin-bottom:16px;min-width:0}
+.inp{width:100%;height:42px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 14px;color:var(--heading);font-size:15px;outline:0}
+.inp:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-l)}
+.inp::placeholder{color:#b4bdc6}
+.inp.calc{background:#eceef1}
+.inp.sm{width:auto;height:38px;padding:0 10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 26px}
+.grid3.al > .fld{display:flex;flex-direction:column;justify-content:flex-end}
+.sec{font-size:17px;font-weight:500;margin:24px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.sec.first{margin-top:4px}
+
+/* listes déroulantes */
+.s2-wrap{position:relative}
+.s2{min-height:42px;border:1px solid var(--border);border-radius:6px;background:#fff;display:flex;align-items:center;cursor:pointer;padding:0 10px 0 14px;gap:6px;outline:0}
+.s2:focus,.s2.open{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-l)}
+.s2-txt{flex:1;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s2-txt.ph{color:#8592a3}
+.s2-x{color:#8592a3;font-size:17px;padding:0 4px;line-height:1}
+.s2-arr{display:inline-flex;color:#8592a3}
+.s2-arr svg.ic{width:18px;height:18px}
+.s2-m{padding:4px 8px;cursor:text}
+.s2-chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:5px;width:100%}
+.s2-chip{background:#eceef1;color:var(--heading);border-radius:4px;padding:3px 8px 3px 6px;font-size:13.5px;display:inline-flex;gap:6px;align-items:flex-start;max-width:100%;line-height:1.35}
+.s2-chip-x{cursor:pointer;color:#8592a3;font-weight:700}
+.s2-in{flex:1;min-width:60px}
+.s2-in input{border:0;outline:0;width:100%;height:30px;background:transparent}
+.s2-drop{position:absolute;left:0;right:0;top:calc(100% + 2px);background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 6px 16px rgba(67,89,113,.22);z-index:80}
+.s2-drop[hidden]{display:none}
+.s2-drop.up{top:auto;bottom:calc(100% + 2px)}
+.s2-sbox{padding:8px}
+.s2-sbox input{width:100%;height:36px;border:1px solid var(--border);border-radius:5px;padding:0 10px;outline:0}
+.s2-list{list-style:none;margin:0;padding:4px 0;max-height:262px;overflow-y:auto}
+.s2-list li{padding:8px 16px;cursor:pointer;color:var(--heading);line-height:1.4}
+.s2-list li.ph{color:#8592a3}
+.s2-list li.sel{background:#eceef1}
+.s2-list li.hi,.s2-list li:hover{background:var(--primary-l);color:var(--primary)}
+.s2-list li.s2-msg{cursor:default;color:var(--body);background:none}
+
+/* EVDA */
+.evda{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 20px;margin-bottom:6px}
+.evd{display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--heading);position:relative}
+.evd input{position:absolute;opacity:0;width:1px;height:1px}
+.evd-sw{position:relative;width:46px;height:24px;border-radius:12px;background:#eceef1;border:1px solid #d0d5db;flex:0 0 46px}
+.evd-sw::after{content:'×';position:absolute;left:2px;top:2px;width:18px;height:18px;border-radius:4px;background:#8592a3;color:#fff;font-size:13px;line-height:18px;text-align:center}
+.evd input:checked + .evd-sw{background:var(--primary);border-color:var(--primary)}
+.evd input:checked + .evd-sw::after{content:'✓';left:24px;background:#fff;color:var(--primary)}
+.evd input:focus-visible + .evd-sw{box-shadow:0 0 0 3px var(--primary-l)}
+.gcs-pic{height:104px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.gcs-pic svg{height:92px;width:auto;stroke:#3b3b3b;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+
+/* étape 1 */
+.st1-code{max-width:840px;margin:0 auto 26px}
+.st1-det{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.st1-av{text-align:center;padding-top:6px}
+.st1-av svg{width:140px;height:140px}
+.st1-av h3{font-size:24px;font-weight:500;margin-top:12px}
+.det h5{font-size:19px;font-weight:500;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.det p{margin:0 0 13px;color:var(--heading)}
+.det p span{color:var(--body);margin-left:6px}
+
+/* tableaux */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--heading);text-align:left;padding:14px 18px;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:12px 18px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--heading)}
+.urine{margin-top:22px}
+.urine td:first-child{width:45%}
+
+/* résumé */
+.sum{max-width:1000px;margin:0 auto}
+.sum-t{font-size:21px;font-weight:600;color:var(--heading);margin:4px 0 8px}
+.sum-bar{height:9px;margin-bottom:22px}
+.sum-cols{display:grid;grid-template-columns:1fr 1fr}
+.sum-l{padding-right:26px;border-right:2px dashed #4a4a4a}
+.sum-r{padding-left:26px}
+.sum-row{margin:0 0 15px;color:var(--heading)}
+.sum-row .k{margin-right:10px}
+.sum-row b{font-weight:600}
+.sum-act{text-align:center;font-size:22px;font-weight:600;margin:22px 0 4px}
+.c-danger{color:var(--danger-t)}.c-warning{color:var(--warning-t)}.c-success{color:var(--success-t)}
+.bg-danger{background:var(--danger)}.bg-warning{background:var(--warning)}.bg-success{background:var(--success)}
+
+/* liste des triages */
+.flt{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-end;padding:20px 22px}
+.flt > div{flex:1 1 170px}
+.tbl-list{font-size:14.5px}
+.tbl-list th{white-space:normal;letter-spacing:.5px;padding:13px 8px}
+.tbl-list td{padding:12px 8px}
+.tbl-list td:nth-child(1),.tbl-list td:nth-child(2){white-space:nowrap}
+.tbl-list th:first-child,.tbl-list td:first-child{padding-left:16px}
+.opt{display:flex;flex-wrap:wrap;gap:6px}
+.btn-sm{padding:6px 10px;font-size:14px}
+.btn-sm svg.ic{width:16px;height:16px}
+.sw{display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--heading);min-height:42px;position:relative}
+.sw input{position:absolute;opacity:0;width:1px;height:1px}
+.sw-ui{width:38px;height:22px;border-radius:11px;background:#e2e5e9;position:relative;flex:0 0 38px}
+.sw-ui::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sw input:checked + .sw-ui{background:var(--primary)}
+.sw input:checked + .sw-ui::after{left:19px}
+.sw input:focus-visible + .sw-ui{box-shadow:0 0 0 3px var(--primary-l)}
+.tbl-top{display:flex;align-items:center;gap:12px;padding:18px 22px;flex-wrap:wrap}
+.tbl-top .sp{flex:1}
+.tbl-top label{display:flex;align-items:center;gap:8px;color:var(--heading)}
+.tbl-wrap{overflow-x:auto}
+.tbl-foot{padding:14px 22px;color:var(--body);font-size:14px}
+.hist{display:inline-flex;align-items:center;gap:5px;color:var(--primary);cursor:pointer;font-size:14.5px;border:0;background:none;padding:0}
+.hist svg.ic{width:16px;height:16px}
+.started{display:flex;gap:5px;align-items:flex-start;color:var(--body);font-size:13.5px;text-transform:uppercase;margin-top:3px}
+.started svg.ic{width:16px;height:16px;margin-top:1px}
+.hist-box{font-size:13px;color:var(--body);margin-top:4px}
+.pr-cell .badge{display:block;width:max-content;margin:3px 0}
+.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:20px}
+.stat{padding:18px 20px}
+.stat b{display:block;font-size:30px;color:var(--heading);font-weight:600}
+
+/* fiche du cas */
+.cp-head{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--train-bg);border-bottom:1px solid var(--train-bd);color:var(--train-t);z-index:2}
+.cp-head b{flex:1}
+.cp-x{border:0;background:none;cursor:pointer;color:var(--train-t);display:inline-flex;padding:4px}
+.cp-body{padding:14px 16px 24px;color:#3d3a30;font-size:14.5px}
+.cp-title{font-size:19px;margin:0 0 4px;color:#3d3a30;font-weight:600}
+.cp-pat{font-weight:600;margin-bottom:8px}
+.cp-story{margin:0 0 12px;line-height:1.5}
+.cp-h{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--train-strong);margin:14px 0 6px;font-weight:700}
+.cp-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.cp-tbl th{text-align:left;font-weight:500;color:#6b5a2e;padding:5px 8px 5px 0;vertical-align:top;width:44%}
+.cp-tbl td{padding:5px 0;vertical-align:top;font-weight:600;color:#3d3a30}
+.cp-tbl tr{border-bottom:1px dashed #ead9a8}
+.cp-paper{background:#fff;border:1px solid #d8c9a0;box-shadow:2px 2px 0 #eadfbf;padding:6px 10px}
+.cp-tasks{margin:0;padding-left:20px}
+.cp-tasks li{margin-bottom:6px}
+.cp-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+/* écrans par-dessus */
+.screen{position:fixed;left:0;right:0;bottom:0;top:var(--tbh);z-index:90;background:rgba(36,41,48,.55);overflow-y:auto;padding:24px 14px}
+.screen[hidden]{display:none}
+#guideScreen{z-index:95}
+.panel{max-width:880px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden}
+.panel.narrow{max-width:720px}
+.panel-h{display:flex;align-items:center;gap:10px;padding:12px 20px;background:var(--train-bg);border-bottom:2px solid var(--train-bd);color:var(--train-t);flex-wrap:wrap}
+.panel-h h2{flex:1;font-size:18px;color:var(--train-t);font-weight:600;min-width:200px}
+.panel-b{padding:20px 22px 24px;color:#3e464f}
+.panel-b h3{font-size:17px;margin:20px 0 8px;color:#2f3a44;font-weight:600}
+.panel-b h3:first-child{margin-top:0}
+.panel-b p{margin:0 0 10px}
+.start-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 6px}
+.case-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:14px 16px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.case-btn:hover,.case-btn:focus-visible{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-l);outline:0}
+.case-btn b{color:var(--heading);font-size:16px}
+.case-btn span{color:var(--body);font-size:14px}
+.case-btn.free{grid-column:1/-1;background:#fafbfc}
+.start-name{display:flex;flex-direction:column;gap:6px;max-width:420px;margin:12px 0}
+.start-name span{font-weight:500;color:var(--heading)}
+.start-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.small{font-size:13.5px;color:var(--body)}
+.msg-box{background:#eef7e9;border-left:4px solid var(--success-t);padding:10px 12px;border-radius:4px;margin-bottom:14px;color:#2f5d1a}
+
+/* correction */
+.res-top{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin-bottom:12px}
+.res-score{font-size:28px;font-weight:700;color:var(--heading)}
+.res-items{list-style:none;margin:0;padding:0}
+.res-items li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #eef0f2;align-items:flex-start}
+.res-ic{width:24px;height:24px;flex:0 0 24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
+.ok .res-ic{background:#3c8f2e}.ko .res-ic{background:#d22c0e}
+.res-items .d{display:block;color:#56606a;font-size:14px;margin-top:2px}
+.why{margin:6px 0 0;padding-left:0;list-style:none}
+.why li{margin:4px 0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.dot-R{background:var(--danger)}.dot-Y{background:var(--warning)}
+.note{background:#f4f6f8;border-left:4px solid #8592a3;padding:10px 12px;border-radius:4px;margin:12px 0;font-size:14.5px}
+.note-train{background:var(--train-bg);border-left-color:var(--train-strong);color:var(--train-t)}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.copybox{width:100%;min-height:120px;margin-top:10px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+
+/* guide */
+.g-tbl{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:14px}
+.g-tbl th,.g-tbl td{border:1px solid #d5dbe1;padding:6px 8px;text-align:left;vertical-align:top}
+.g-tbl th{background:#f3f5f7;font-weight:600;color:#2f3a44}
+.g-case{border:1px solid #e0d3a8;border-radius:8px;padding:12px 14px;margin:10px 0;background:#fffdf6}
+.g-case h4{font-size:16px;margin:0 0 6px;color:#3d3a30;font-weight:600}
+.g-list{margin:4px 0 10px;padding-left:20px}
+.g-list li{margin-bottom:4px}
+.g-m th{width:19%}.g-m td{width:31%}
+.g-m2{display:none}
+@media (max-width:640px){.g-m4{display:none}.g-m2{display:table}}
+
+/* messages */
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:100;display:flex;flex-direction:column;align-items:center;gap:8px;width:max-content;max-width:min(420px,calc(100vw - 32px))}
+.toast{background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:12px 14px;border-left:5px solid var(--success);color:var(--heading);font-size:14.5px}
+.toast.t-train{border-left-color:var(--train-strong);background:var(--train-bg);color:var(--train-t)}
+.toast.t-info{border-left-color:var(--info)}
+#printArea{display:none}
+
+/* écrans moyens et petits : la fiche du cas reste à côté du formulaire tant que possible */
+.tb-s{display:none}
+@media (max-width:1599px){
+  body.case-open #menu{width:220px;flex-basis:220px}
+  body.case-open #casePanel{width:320px;flex-basis:320px}
+  body.case-open #page{padding:0 20px}
+}
+@media (max-width:1199px){
+  #menu,body.case-open #menu{position:fixed;left:0;top:var(--tbh);bottom:0;height:auto;width:260px;transform:translateX(-100%);box-shadow:4px 0 18px rgba(0,0,0,.2)}
+  body.menu-open #menu{transform:none}
+  .nb-burger{display:inline-flex}
+  #page,body.case-open #page{padding:0 16px}
+  body.case-open #casePanel{width:290px;flex-basis:290px}
+  .grid3{gap:0 18px}
+  .tb-text{display:none}
+}
+@media (max-width:899px){
+  #casePanel,body.case-open #casePanel{position:fixed;right:0;top:var(--tbh);bottom:0;height:auto;width:min(380px,92vw);box-shadow:-6px 0 18px rgba(0,0,0,.18)}
+  .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step-s{display:none}
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  body{font-size:14.5px}
+  .tb-l{display:none}.tb-s{display:inline}
+  .grid3,.st1-det,.sum-cols,.evda,.start-grid{grid-template-columns:1fr}
+  .sum-l{border-right:0;padding-right:0;border-bottom:2px dashed #4a4a4a;padding-bottom:6px;margin-bottom:16px}
+  .sum-r{padding-left:0}
+  .step .step-t{display:none}.step.act .step-t{display:block}
+  .step-n{width:34px;height:34px;flex-basis:34px;font-size:16px}
+  .wz-head{padding:12px}
+  .wz-body{padding:16px 14px 18px}
+  .wz-sep{margin:0}
+  .nb-icons .nb-ic{display:none}
+  .bc{font-size:1.2rem}
+  .tbl th,.tbl td{padding:10px}
+  .urine td:first-child{width:40%}
+  .tb-text{display:none}
+  .panel-b{padding:16px 14px 20px}
+}
+
+/* téléphone (largeur ≤ 767 px) : la fiche du cas passe en bas de l'écran ; cibles tactiles plus grandes */
+.cp-bar,.cp-x-txt,.ph-only{display:none}
+.cp-bar{width:100%;border:0;margin:0;background:var(--train-bg);color:var(--train-t);text-align:left;padding:8px 14px 10px;cursor:pointer;flex-direction:column;gap:3px;font:inherit;line-height:1.35}
+.cp-bar-top{display:flex;align-items:center;gap:8px;min-width:0}
+.cp-bar-top b{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14.5px;color:#3d3a30}
+.cp-bar-more{flex:0 0 auto;display:inline-flex;align-items:center;gap:2px;font-weight:600;font-size:13.5px;text-decoration:underline;color:var(--train-strong)}
+.cp-bar-more svg.ic,.cp-x-txt svg.ic{width:16px;height:16px}
+.cp-bar-task{font-size:13.5px;color:#3d3a30;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cp-tasks li.cur{font-weight:700;color:#2b2617;background:#fff1c7;border-radius:4px;padding:1px 4px;margin-left:-4px}
+.s2-touch{position:relative;padding-right:36px}
+.s2-mph{position:absolute;right:10px;top:50%;margin-top:-9px;display:inline-flex;color:#8592a3}
+.s2-mph svg.ic{width:18px;height:18px}
+.inp-q{width:200px}
+@media (max-width:767px){
+  button,a,label,.s2,.case-btn{touch-action:manipulation}
+  input,select,textarea{font-size:16px !important}
+  .ph-only{display:block}
+  #trainbar{padding:6px 10px;gap:6px 8px}
+  .tb-case,.tb-cbtn{display:none}
+  .tbtn{padding:5px 10px;min-height:34px}
+  #menu,body.case-open #menu{z-index:60}
+  #casePanel,body.case-open #casePanel{display:none;position:fixed;left:0;right:0;top:auto;bottom:0;width:auto;height:auto;flex:none;overflow:hidden;border-left:0;border-top:3px solid var(--train-bd);box-shadow:0 -6px 18px rgba(0,0,0,.18);z-index:45;padding-bottom:env(safe-area-inset-bottom)}
+  body.has-case #casePanel{display:flex;flex-direction:column}
+  body.case-open #casePanel{max-height:72vh;max-height:72dvh}
+  body.has-case:not(.case-open) .cp-head,body.has-case:not(.case-open) .cp-body{display:none}
+  body.has-case:not(.case-open) .cp-bar{display:flex}
+  body.kb #casePanel{display:none !important}
+  .cp-head{position:static;flex:0 0 auto;cursor:pointer}
+  .cp-body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px 16px 18px}
+  .cp-x-ic{display:none}
+  .cp-x-txt{display:inline-flex;align-items:center;gap:2px;font-weight:600;font-size:14px;text-decoration:underline}
+  body.has-case #page{padding-bottom:var(--cpb,0px)}
+  body.has-case #toasts{bottom:calc(var(--cpb,0px) + 12px)}
+  #navbar{margin:10px 0 8px;min-height:54px;padding:0 10px;gap:8px}
+  .alert-info{font-size:13.5px;padding:10px 12px;margin-bottom:14px}
+  .card{margin-bottom:14px}
+  .inp{height:44px}
+  .s2{min-height:44px}
+  .s2-list{max-height:240px}
+  .s2-list li{padding:10px 14px}
+  .s2-chip{font-size:14px;padding:4px 8px 4px 4px}
+  .s2-chip-x{padding:0 6px;font-size:18px;line-height:1.05}
+  .btn{min-height:42px}
+  .btn-sm{min-height:36px}
+  .screen{padding:12px 8px 16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  .tbl-top{padding:14px 16px;gap:10px}
+  .tbl-top .sp{display:none}
+  .tbl-top label{flex:1 1 100%;order:10;min-width:0}
+  .tbl-top .inp-q{flex:1 1 0;width:0;min-width:0}
+  .flt{padding:16px;gap:12px 14px}
+  .flt > div{flex:1 1 140px}
+  /* listes : une carte par ligne */
+  .tbl-list thead{display:none}
+  .tbl-list,.tbl-list tbody{display:block;width:100%}
+  .tbl-list tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:3px 8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+  .tbl-list td,.tbl-list td:first-child,.tbl-list td:nth-child(1),.tbl-list td:nth-child(2){display:block;padding:0;border:0;white-space:normal;min-width:0}
+  .tbl-list td[colspan]{grid-column:1/-1}
+  .tbl-tri tr{grid-template-areas:"code code prio" "pid name name" "date date date" "opt opt opt"}
+  .tbl-tri td:nth-child(1){grid-area:code;font-weight:600}
+  .tbl-tri td:nth-child(2){grid-area:pid}
+  .tbl-tri td:nth-child(3){grid-area:name}
+  .tbl-tri td:nth-child(4){grid-area:date;font-size:14px}
+  .tbl-tri td:nth-child(5){grid-area:prio;align-self:start}
+  .tbl-tri td:nth-child(6){grid-area:opt;margin-top:6px}
+  .tbl-reg tr{grid-template-areas:"code name name" "sex dob dob" "btn btn btn"}
+  .tbl-reg td:nth-child(1){grid-area:code;font-weight:600}
+  .tbl-reg td:nth-child(2){grid-area:name}
+  .tbl-reg td:nth-child(3){grid-area:sex}
+  .tbl-reg td:nth-child(4){grid-area:dob}
+  .tbl-reg td:nth-child(5){grid-area:btn;margin-top:6px}
+  .tbl-tri td:nth-child(3)::before,.tbl-reg td:nth-child(4)::before{content:"· ";color:var(--muted)}
+  .pr-cell .badge{display:block;width:max-content;margin:2px 0 2px auto}
+  .tbl-list .opt .btn{flex:1 1 auto}
+}
+@media (max-width:640px){
+  .wz-head{flex-wrap:nowrap;justify-content:space-between;gap:6px;padding:10px 12px}
+  .wz-sep{display:none}
+  .step{flex:1 1 0;justify-content:center;padding:2px;min-width:0}
+  .step .step-t,.step.act .step-t{display:none}
+  .step-n{width:100%;max-width:56px;flex:0 1 auto;height:38px}
+  .grid3.num{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+  .evda{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .gcs-pic{height:66px}
+  .gcs-pic svg{height:58px}
+  .st1-av svg{width:96px;height:96px}
+  .st1-av h3{font-size:20px}
+  .st1-code{margin-bottom:16px}
+  .st-nav{gap:8px}
+  .sum-t{font-size:19px}
+  .sum-act{font-size:19px}
+  .bc{overflow-wrap:anywhere}
+}
+@media (max-width:380px){
+  .urine,.urine tbody,.urine tr,.urine td{display:block;width:100% !important}
+  .urine thead{display:none}
+  .urine tr{padding:8px 0;border-bottom:1px solid var(--border)}
+  .urine td{border:0;padding:2px 0 !important}
+  .urine td:first-child{font-size:12.5px;font-weight:500;text-transform:uppercase;letter-spacing:.02em}
+}
+@media (max-width:340px){
+  .grid3.num{grid-template-columns:1fr}
+}
+
+/* impression */
+@media print{
+  @page{size:A4;margin:11mm 11mm}
+  body{background:#fff}
+  body.printing > *:not(#printArea){display:none !important}
+  body.printing #printArea{display:block !important}
+  #printArea{font-size:9.5pt;line-height:1.35;color:#000}
+  #printArea h2{font-size:14pt;margin:0 0 6pt}
+  #printArea h3{font-size:11.5pt;margin:10pt 0 4pt;break-after:avoid;page-break-after:avoid}
+  #printArea p{margin:0 0 5pt}
+  #printArea .g-tbl{margin:4pt 0 6pt;font-size:9pt}
+  #printArea .g-tbl th,#printArea .g-tbl td{padding:2.5pt 5pt}
+  #printArea .g-case{padding:6pt 8pt;margin:6pt 0;background:#fff}
+  #printArea .g-case h4{font-size:11pt;margin:0 0 3pt}
+  #printArea .g-list{margin:3pt 0 5pt}
+  #printArea .g-list li{margin-bottom:1pt}
+  #printArea .small{font-size:8.5pt}
+  #printArea .g-m4{display:table}#printArea .g-m2{display:none}
+  #printArea .g-case,#printArea .g-tbl tr{break-inside:avoid;page-break-inside:avoid}
+  #printArea .pb{break-before:page;page-break-before:always}
+  #printArea .g-tbl th,#printArea .g-tbl td{border:1px solid #777}
+  #printArea .noprint{display:none}
+}
+</style>
+</head>
+<body>
+<noscript><div style="padding:20px;font-size:16px;line-height:1.5"><p><b>Cet exercice a besoin de JavaScript.</b> Sur un téléphone Android, ouvrez le fichier avec Chrome (pas l’aperçu de WhatsApp). Sur iPhone, l’aperçu du fichier ne lance pas l’exercice : utilisez un ordinateur.</p><p><b>This practice needs JavaScript.</b> On an Android phone, open the file with Chrome (not the WhatsApp preview). On iPhone, the file preview does not run the practice: use a computer.</p></div></noscript>
+
+<div id="trainbar" role="region" aria-label="Exercice"></div>
+
+<div id="layout">
+  <aside id="menu" aria-label="Menu"></aside>
+  <div id="page">
+    <nav id="navbar"></nav>
+    <main id="content"></main>
+    <footer id="footer"></footer>
+  </div>
+  <aside id="casePanel" aria-label="Fiche du cas"></aside>
+</div>
+
+<div id="startScreen" class="screen"></div>
+<div id="guideScreen" class="screen" hidden></div>
+<div id="modalScreen" class="screen" hidden></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="printArea"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- outils ---------- */
+var $ = function(s, r){ return (r || document).querySelector(s); };
+var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function norm(s){ return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+function pad2(n){ return (n < 10 ? '0' : '') + n; }
+var TODAY = new Date();
+function dmy(d){ return pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + d.getFullYear(); }
+function dmyhms(d){ return dmy(d) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()); }
+function ymd(d){ return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function addDays(d, n){ var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+function dmyISO(iso){ var p = iso.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+function ageOf(iso){ var b = new Date(iso + 'T00:00:00'); var a = TODAY.getFullYear() - b.getFullYear(); var m = TODAY.getMonth() - b.getMonth(); if (m < 0 || (m === 0 && TODAY.getDate() < b.getDate())) a--; return a; }
+function parseNum(v){ if (v === null || v === undefined) return null; var s = String(v).trim().replace(',', '.'); if (s === '') return null; var n = Number(s); return isFinite(n) ? n : NaN; }
+function fmtC(n, dec){ var x = n.toFixed(dec === undefined ? 2 : dec); return (typeof S !== 'undefined' && S.lang === 'en') ? x : x.replace('.', ','); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function rid(){ var c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', s = 'TR'; for (var i = 0; i < 10; i++) s += c.charAt(Math.floor(Math.random() * c.length)); return s; }
+var store = {
+  get: function(k){ try { return window.localStorage.getItem('curyEx.' + k); } catch (e) { return null; } },
+  set: function(k, v){ try { window.localStorage.setItem('curyEx.' + k, v); } catch (e) {} }
+};
+/* téléphone : écran étroit (≤ 767 px) et écran tactile */
+var COARSE = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+var PHONE_MQ = window.matchMedia ? window.matchMedia('(max-width: 767px)') : null;
+function isPhone(){ return PHONE_MQ ? PHONE_MQ.matches : window.innerWidth <= 767; }
+function cssPx(name){ var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)); return isNaN(v) ? 0 : v; }
+
+/* ---------- icônes ---------- */
+function svg(p, cls){ return '<svg class="ic ' + (cls || '') + '" viewBox="0 0 24 24" aria-hidden="true">' + p + '</svg>'; }
+var IC = {
+  dash: svg('<rect x="3" y="3" width="8" height="10" rx="1.5"/><rect x="13" y="3" width="8" height="6" rx="1.5"/><rect x="3" y="15" width="8" height="6" rx="1.5"/><rect x="13" y="11" width="8" height="10" rx="1.5"/>', 'icf'),
+  door: svg('<path d="M6 3h9l3 2v16H6z"/><path d="M15 3v18"/><path d="M11 12h.01"/>'),
+  layers: svg('<rect x="4" y="4" width="16" height="6" rx="1.5"/><path d="M12 10v4"/><rect x="4" y="14" width="16" height="6" rx="1.5"/>'),
+  sort: svg('<path d="M8 4v16M8 4L5 7M8 4l3 3M16 20V4M16 20l-3-3M16 20l3-3"/>'),
+  clinic: svg('<path d="M3 11l9-7 9 7v9H3z"/><path d="M12 10v6M9 13h6"/>'),
+  bed: svg('<path d="M3 6v13M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>'),
+  hosp: svg('<rect x="3" y="4" width="10" height="16" rx="1.5"/><path d="M8 8v4M6 10h4"/><circle cx="17" cy="10" r="2.5"/><path d="M13.5 20a3.5 3.5 0 0 1 7 0"/>'),
+  archive: svg('<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10h14V9M10 13h4"/>'),
+  user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
+  cart: svg('<path d="M3 4h2l2.5 11h11L21 7H7"/><circle cx="9" cy="19" r="1.5"/><circle cx="18" cy="19" r="1.5"/><path d="M13 8v4M11 10h4"/>'),
+  search: svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'),
+  globe: svg('<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/>'),
+  grid: svg('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>'),
+  sun: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+  bell: svg('<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>'),
+  chevR: svg('<path d="M9 6l6 6-6 6"/>'),
+  chevL: svg('<path d="M15 6l-6 6 6 6"/>'),
+  chevD: svg('<path d="M6 9l6 6 6-6"/>'),
+  chevU: svg('<path d="M6 15l6-6 6 6"/>'),
+  info: svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'),
+  help: svg('<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>'),
+  list: svg('<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>'),
+  edit: svg('<path d="M4 20h4L19 9l-4-4L4 16z"/>'),
+  clock: svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+  filter: svg('<path d="M4 5h16l-6 8v5l-4 2v-7z"/>'),
+  reset: svg('<path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/>'),
+  export: svg('<path d="M12 15V3M8 7l4-4 4 4M5 13v6h14v-6"/>'),
+  plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  burger: svg('<path d="M4 6h16M4 12h16M4 18h16"/>'),
+  x: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+  logout: svg('<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/>'),
+  userSm: svg('<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>'),
+  back: svg('<path d="M15 6l-6 6 6 6"/>')
+};
+var AVATAR = '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="20" fill="#2e9e44"/><circle cx="20" cy="15.5" r="7" fill="#fff"/><path d="M7.5 33a12.5 10.5 0 0 1 25 0z" fill="#fff"/></svg>';
+var AVATAR_BIG = '<svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" fill="#f1f2f4"/><circle cx="20" cy="18" r="15" fill="#2e9e44"/><circle cx="20" cy="15" r="6" fill="#fff"/><path d="M9 29a11 9 0 0 1 22 0z" fill="#fff"/></svg>';
+var GCS_PIC = {
+  e: '<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M10 22c10-8 22-8 30-2"/><path d="M80 20c8-6 20-6 30 2"/><ellipse cx="27" cy="38" rx="16" ry="13"/><circle cx="27" cy="38" r="5" fill="#3b3b3b"/><ellipse cx="93" cy="38" rx="16" ry="13"/><circle cx="93" cy="38" r="5" fill="#3b3b3b"/><path d="M55 40c-2 10-4 16 5 18"/></svg>',
+  v: '<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M20 22c20 4 60 4 80 0"/><path d="M20 22c10 30 70 30 80 0"/><path d="M30 28c20 6 40 6 60 0"/><path d="M40 60c14 4 26 4 40 0"/></svg>',
+  m: '<svg viewBox="0 0 120 70" aria-hidden="true"><path d="M115 30H70"/><path d="M70 30c-10-4-25-4-40 0l-20 3"/><path d="M30 34l-18 8M34 40l-20 10M40 46l-18 12M50 50l-10 12"/><path d="M70 30c0 12-8 22-22 22"/></svg>'
+};
+
+/* ---------- données de l'exercice (fictives) ---------- */
+var PATIENTS = [
+  {id:'P26-TEST01', name:'PATIENT TEST 01', sex:'F', dob:'1992-05-17', reg:1},
+  {id:'P26-TEST02', name:'PATIENT TEST 02', sex:'M', dob:'1998-03-14', reg:2},
+  {id:'P26-TEST03', name:'PATIENT TEST 03', sex:'M', dob:'1981-01-22', reg:3},
+  {id:'P26-TEST04', name:'PATIENT TEST 04', sex:'M', dob:'1991-06-09', reg:4},
+  {id:'P26-TEST05', name:'PATIENT TEST 05', sex:'F', dob:'1966-11-30', reg:5},
+  {id:'P26-TEST06', name:'PATIENT TEST 06', sex:'M', dob:'2007-02-11', reg:6},
+  {id:'P26-TEST07', name:'PATIENT TEST 07', sex:'F', dob:'1985-04-03', reg:7},
+  {id:'P26-TEST08', name:'PATIENT TEST 08', sex:'M', dob:'1954-09-19', reg:8},
+  {id:'P26-TEST20', name:'PATIENT TEST 02', sex:'M', dob:'1971-08-02', reg:9}
+];
+function pById(id){ for (var i = 0; i < PATIENTS.length; i++) if (PATIENTS[i].id === id) return PATIENTS[i]; return null; }
+
+/* Motifs : extrait court de la CIM-11 (les six premiers comme sur l'écran réel) ; [code, libellé FR, mots-clés FR, libellé EN, mots-clés EN] */
+var MOTIFS = [
+  ['MA00','Symptôme ou affection du sang','','Symptom or condition of the blood',''],
+  ['MA01','Adénopathies','ganglions','Lymphadenopathy','lymph nodes glands'],
+  ['MA0Y','Autres symptômes du sang, des organes hématopoïétiques ou du système immunitaire','','Other symptoms of the blood, blood-forming organs or immune system',''],
+  ['MA10',"Taux sériques d'enzymes anormaux",'','Abnormal serum enzyme levels',''],
+  ['MA11','Résultats cliniques relatifs aux hormones dans le sang, les organes hématopoïétiques ou le système immunitaire','','Clinical findings relating to hormones in blood, blood-forming organs or the immune system',''],
+  ['MA12','Résultats cliniques relatifs aux médicaments, préparations médicamenteuses et substances biologiques dans le sang, les organes hématopoïétiques ou le système immunitaire','','Clinical findings relating to drugs, medicaments and biological substances in blood, blood-forming organs or the immune system',''],
+  ['MB4D','Céphalée, non classée ailleurs','mal de tete','Headache, not elsewhere classified','head pain'],
+  ['MD11.5','Dyspnée','essoufflement souffle respiration difficile','Dyspnoea','breathless shortness of breath difficulty breathing dyspnea'],
+  ['MD11.B','Stridor','','Stridor',''],
+  ['MD11.C','Respiration sifflante','sifflement asthme','Wheezing','asthma'],
+  ['MD12','Toux','','Cough',''],
+  ['MD30.Z','Douleur thoracique, sans précision','poitrine thorax','Chest pain, unspecified','chest'],
+  ['MD81','Douleur abdominale ou pelvienne','ventre abdomen mal au ventre','Abdominal or pelvic pain','belly stomach tummy'],
+  ['MD90.0','Nausée','nausees','Nausea',''],
+  ['MD90.1','Vomissements','vomit','Vomiting','vomit throwing up'],
+  ['MG21','Frissons','','Chills','shivering rigors'],
+  ['MG22','Fatigue','asthenie','Fatigue','tired tiredness'],
+  ['MG25','Sensation de malaise','malaise','Feeling ill','unwell malaise'],
+  ['MG26',"Fièvre d'origine autre ou inconnue",'temperature chaud','Fever of other or unknown origin','temperature hot'],
+  ['MG27','Hémorragie, non classée ailleurs','saignement','Haemorrhage, not elsewhere classified','bleeding hemorrhage'],
+  ['MG29','Œdème','oedeme gonflement','Oedema','edema swelling'],
+  ['MG40','Choc','','Shock',''],
+  ['MG45','Syncope ou collapsus','evanouissement perte de connaissance','Syncope or collapse','fainting faint'],
+  ['NC30.2',"Abrasion d'autres parties ou de parties non précisées de l'avant-bras",'ecorchure eraflure bras','Abrasion of other or unspecified parts of forearm','graze scrape scratch arm'],
+  ['NC91.Z','Plaie ouverte du genou ou de la jambe, sans précision','coupure laceration','Open wound of knee or lower leg, unspecified','cut laceration leg']
+];
+function motifTxt(c, lang){ lang = lang || S.lang; for (var i = 0; i < MOTIFS.length; i++) if (MOTIFS[i][0] === c) return c + ' - ' + (lang === 'en' ? MOTIFS[i][3] : MOTIFS[i][1]); return c; }
+
+/* Signes : texte des listes du système, couleur IITT (R rouge, Y jaune, RY rouge enfant / jaune adulte, G1 et G2 = deux signes nécessaires) */
+var SIGN_BOXES = [
+  {k:'va', label:'VOIE AERIENNE & RESPIRATION', sum:'Voie aerienne & respiration', items:[
+    ['Stridor','R'], ['Toute tuméfaction/masse de la bouche, de la gorge ou du cou','Y'], ['Respiration sifflante (pas de critères rouge)','Y']]},
+  {k:'dr', label:'DETRESSE RESPIRATOIRE', sum:'Detresse respiratoire', items:[
+    ['Respiration très lente','R'], ['Respiration très rapide','R'], ['Incapacité à parler ou à marcher sans aide','R'],
+    ['Incapacité à parler, à manger ou à allaiter.','R',1], ['Confus, somnolent ou agité','R'], ['Battement des ailes du nez, geignement','R',1],
+    ['Utilisation des muscles accessoires (cou, intercostaux, abdominaux)','R'], ['Utilisation des muscles accessoires (hochement de tête, entonnoir xiphoïdien)','R',1]]},
+  {k:'circ', label:'CIRCULATION', sum:'Circulation', items:[
+    ['Saignement abondant','R'], ["Incapable de s'alimenter ou de boire",'Y'], ['Pâleur sévère (pas de critères Rouge)','Y'],
+    ['Saignement continu (pas de critères Rouge)','Y'], ['Évanouissement récent','Y'], ['Extrémités froides','R',1],
+    ['Léthargie','G2',1], ['Cerne occulaire','G2',1], ['Pli cutanee tres paresseux','G2',1], ['Boit difficilement','G2',1],
+    ['Vomit tout','Y'], ['Diarrhée persistante','Y'], ['Déshydratation','Y']]},
+  {k:'neuro', label:'DEFICIT NEUROLOGIQUE', sum:'Deficit neurologique', items:[
+    ['Convulsions actives','R'], ['Altération de la conscience','G1'], ['Hypothermie','G1'], ['Fièvre','G1'], ['Raideur de la nuque','G1'], ['Headache','G1'],
+    ['Hypoglycémie','R'], ["Altération de l'état mental ou agitation (pas de critères rouge)",'Y'], ['Faiblesse générale aiguë','Y'],
+    ['Plainte neurologique focale aiguë','Y'], ['Troubles visuels aigus','Y'], ['Douleur sévère (pas de critères rouge)','Y'],
+    ['Etat de conscience altéré (confus, agité, permanemment irritable or lethargique) avec raideur de la nuque, hypothermie ou fièvre','R',1],
+    ['Agitation, irritabilité permanente ou léthargie','Y',1], ['Douleurs intenses','Y',1]]},
+  {k:'trauma', label:'TRAUMATISME/AUTRES', sum:'Traumatisme/autres', items:[
+    ['Traumatisme à haut risque','R'], ['Empoisonnement/ingestion','R'], ['Exposition aux produits chimiques dangereux','R'],
+    ['Risque de perte d’un membre','R'], ['Morsure de serpent','R'], ['Douleur thoracique aiguë (>50 ans)','R'], ['Douleur abdominale aiguë (>50 ans)','R'],
+    ['ECG avec ischémie aiguë (si réalisé)','R'], ['Violent ou agressif','R'], ['Enfant âgé de moins de 8 jours','R',1],
+    ['Âge < 2 mois et température < 36 ou > 39°C','R',1], ['Douleur testiculaire/scrotale aiguë ou priapisme','RY'],
+    ['Enceinte avec des critères Rouge d’adulte','R'],
+    ['Nouvelle éruption cutanée s’aggravant en quelques heures ou pelant (pas de critères Rouge)','Y'],
+    ['Déformation aiguë visible d’un membre','Y'], ['Fracture ouverte','Y'], ['Luxation suspectée','Y'], ['Autres traumatismes/brûlures (pas de critères Rouge)','Y'],
+    ['Diagnostic connu nécessitant une intervention chirurgicale urgente','Y'], ['Agression sexuelle','Y'], ['Impossibilité d’uriner','Y'],
+    ['Exposition nécessitant une prophylaxie à court terme','Y'], ['Grossesse, référée pour des complications','Y'],
+    ['Nourrisson âgé de 8 jours à 6 mois','Y',1], ['Malnutrition : émaciation sévère visible OU œdème des deux pieds','Y',1],
+    ['Traumatisme/brûlure (pas de critères Rouge)','Y',1], ['Céphalée (pas de critères Rouge)','Y',1]]}
+];
+var SIGN_INFO = {};
+SIGN_BOXES.forEach(function(b){ b.items.forEach(function(it){ SIGN_INFO[it[0]] = {box:b.k, boxLabel:b.label, c:it[1], child:!!it[2]}; }); });
+
+var GCS = {
+  e:['Spontané','À la demande','À la douleur','Aucune'],
+  v:['Orienté','Confuse','Paroles inapropriées','Sons incompréhensibles','Aucune'],
+  m:['Obéit aux commandes','Localise à la douleur','Retrait à la douleur','Flexion anormale (décortication)','Extension anormale (décérébration)','Aucune']
+};
+var EVDA = [['E','Eveillé'],['V','Répond à la voix'],['D','Répond à la douleur'],['A','Absence de réponse']];
+var FIELDS3 = [
+  ['poids','POIDS (KG)'],['taille','TAILLE (CM)'],['imc','IMC (INDICE DE MASSE CORPORELLE)',1],
+  ['pideal','POIDS IDÉAL (KG) - SELON LORENTZ',1],['sc','SURFACE CORPORELLE (M²)',1],['temp','TEMPÉRATURE (°C)'],
+  ['pas','PAS (MMHG)'],['pad','PAD (MMHG)'],['pam','PAM (MMHG)',1],
+  ['ttaille','TOUR DE TAILLE (CM)'],['thanche','TOUR DE HANCHE (CM)'],['pb','PB (CM)'],
+  ['fc','FC (FRÉQUENCE CARDIAQUE)'],['fr','FR (FRÉQUENCE RESPIRATOIRE)'],['sao2','SAO2 (SATURATION EN OXYGÈNE)'],
+  ['trc','TEMPS DE RECOLORATION CAPILLAIRE (EN SECONDES)'],['pc','PC (CM)']
+];
+var URINE = [
+  ['Leucocytes',['Négatif(Jaune)','Trace 15','Small 70','Modéré 125','Large 500']],
+  ['Nitrites',['Négatif(Jaune)','Positif(Any degree of uniform pink color)']],
+  ['Urobilinogènes',['Négatif(entre 3.2 et 16)','32+','64++','128+++']],
+  ['Proteines',['Négatif(Vert)','Trace+/-','0.3+','1.0++','3.0+++','>=20.0++++']],
+  ['PH',['Négatif(5.0)','6.0','6.5','7.0','7.5','8.0','8.5']],
+  ['Sang',['Négatif','Non Hemolyzed 10 Trace','Hemolyzed 10 Trace','25 Small','80 Moderate','200 Large']],
+  ['Densité',['Négatif(1.000)','1.005','1.010','1.015','1.020','1.025','1.030']],
+  ['Ascorbic acide',['Négatif(0)','0.6','1.4','2.8','5.0']],
+  ['Cétones',['Négatif','Trace 0.5','Small 1.5','Moderate 4.0','Large 8.0','Large 16']],
+  ['Bilirubines',['Négatif','Small 17','Moderate 50','Large 100']],
+  ['Glucose',['Négatif','Trace 5','15+','30++','60+++','110++++']],
+  ['Aspect',['Limpide','Mousseux','Trouble','Gluant']],
+  ['Couleur',['Jaune clair','eau de roche','Hematique','Jaune foncé','Cocacola']]
+];
+var PRIO = {
+  CRITIQUE:{badge:'CRITIQUE', cls:'danger', etat:'Patient critique', action:"Traitement immédiat (Respect de l'heure d'or)"},
+  SEVERE:{badge:'SÉVÈRE', cls:'warning', etat:'Patient sévère', action:'À surveiller'},
+  MODERE:{badge:'MODÉRÉ', cls:'success', etat:'Patient modéré', action:'Stable'}
+};
+var FLABEL = {temp:'Température (°C)', fc:'FC', fr:'FR', pas:'PAS', pad:'PAD', sao2:'SAO2', poids:'Poids (kg)', taille:'Taille (cm)', glycemie:'Glycémie (g/L)', hb:"Hémoglobine", ttaille:'Tour de taille', thanche:'Tour de hanche', pb:'PB', trc:'TRC', pc:'PC'};
+
+function newData(){
+  return {patient:null, motifs:[], va:[], dr:[], circ:[], neuro:[], trauma:[], cyanose:null, evda:[], gcsE:null, gcsV:null, gcsM:null,
+    poids:'', taille:'', temp:'', pas:'', pad:'', ttaille:'', thanche:'', pb:'', fc:'', fr:'', sao2:'', trc:'', pc:'',
+    ddr:'', grossesse:null, glycemie:'', hb:'', tdr:null, urine:{}};
+}
+
+/* ---------- écrans EMR en anglais (bouton EN) : traduction d’affichage seulement, les valeurs gardées restent en français ---------- */
+var UI_EN = {"Rechercher...": "Search...", "Accueil": "Reception", "Enregistrement": "Registration", "Nouveau patient": "New patient", "NOM": "LAST NAME", "PRÉNOM": "FIRST NAME", "SEXE": "SEX", "Féminin": "Female", "Masculin": "Male", "DATE DE NAISSANCE": "DATE OF BIRTH", "TÉLÉPHONE": "PHONE", "Enregistrer": "Save", "Annuler": "Cancel", "Commencer le triage": "Start triage", "Enregistrer un autre patient": "Register another patient", "Patients enregistrés": "Registered patients", "Tableau de bord": "Dashboard","Accueil - Enregistrement": "Reception - Registration","Accueil - Information": "Reception - Information","Triage": "Triage","Nouveau triage": "New triage","Liste des triages": "Triage list","Statistiques": "Statistics","Consultations": "Consultations","Bloc Opératoire": "Operating theatre","Hospitalisations": "Hospitalisation","Morgue": "Morgue","Personnel": "Staff","Caisse Cession": "Cash desk (sales)","Rechercher un patient (Ctrl+/)": "Search a patient (Ctrl+/)","Rechercher un patient": "Search a patient","Mon profil": "My profile","Se déconnecter": "Log out","Besoin d'aide ?": "Need help?","Reprise du triage": "Resuming triage","(en attente)": "(on hold)","Informations du patient": "Patient information","Consultation/plaintes": "Consultation/complaints","Motifs de concultation/plainte": "Reasons for consultation/complaint","Paramètres": "Parameters","Prise de paramètre": "Taking parameters","Prise de paramètres": "Taking parameters","Examen": "Tests","Examens complémentaires": "Additional tests","Résumé": "Summary","Résumé du triage": "Triage summary","Précédent": "Previous","Suivant": "Next","Mettre en attente": "Put on hold","Soumettre": "Submit","Entrer le code patient": "Enter the patient code","CODE PATIENT": "PATIENT CODE","Rechercher le patient...": "Search the patient...","Détails": "Details","Email:": "Email:","Type de patient:": "Patient type:","NORMALE": "NORMAL","Date de naissance:": "Date of birth:","Réligion:": "Religion:","État matrimonial:": "Marital status:","Téléphone:": "Phone:","Adresse:": "Address:","Nationalité:": "Nationality:","Cameroun": "Cameroon","Groupe ethnique:": "Ethnic group:","Consultations/plaintes": "Consultations/complaints","Motifs de consultation/plainte": "Reasons for consultation/complaint","MOTIF DE CONSULTATION": "REASON FOR CONSULTATION","VOIE AERIENNE & RESPIRATION": "AIRWAY & BREATHING","DETRESSE RESPIRATOIRE": "RESPIRATORY DISTRESS","CIRCULATION": "CIRCULATION","DEFICIT NEUROLOGIQUE": "NEUROLOGICAL DEFICIT","TRAUMATISME/AUTRES": "TRAUMA/OTHER","CYANOSE CENTRALE": "CENTRAL CYANOSIS","Non": "No","Oui": "Yes","Sélectionner...": "Select...","Rechercher": "Search","Effacer": "Clear","Retirer": "Remove","Voie aerienne & respiration": "Airway & breathing","Detresse respiratoire": "Respiratory distress","Circulation": "Circulation","Deficit neurologique": "Neurological deficit","Traumatisme/autres": "Trauma/other","Stridor": "Stridor","Toute tuméfaction/masse de la bouche, de la gorge ou du cou": "Any swelling/mass of mouth, throat or neck","Respiration sifflante (pas de critères rouge)": "Wheezing (no red criteria)","Respiration très lente": "Very slow breathing","Respiration très rapide": "Very fast breathing","Incapacité à parler ou à marcher sans aide": "Unable to talk or walk unaided","Incapacité à parler, à manger ou à allaiter.": "Unable to talk, eat or breastfeed","Confus, somnolent ou agité": "Confused, sleepy or agitated","Battement des ailes du nez, geignement": "Nasal flaring, grunting","Utilisation des muscles accessoires (cou, intercostaux, abdominaux)": "Accessory muscle use (neck, intercostal, abdominal)","Utilisation des muscles accessoires (hochement de tête, entonnoir xiphoïdien)": "Accessory muscle use (head nodding, chest indrawing)","Saignement abondant": "Heavy bleeding","Incapable de s'alimenter ou de boire": "Unable to eat or drink","Pâleur sévère (pas de critères Rouge)": "Severe pallor (no red criteria)","Saignement continu (pas de critères Rouge)": "Ongoing bleeding (no red criteria)","Évanouissement récent": "Recent fainting","Extrémités froides": "Cold extremities","Léthargie": "Lethargy","Cerne occulaire": "Sunken eyes","Pli cutanee tres paresseux": "Very slow skin pinch","Boit difficilement": "Drinks poorly","Vomit tout": "Vomiting everything","Diarrhée persistante": "Persistent diarrhoea","Déshydratation": "Dehydration","Convulsions actives": "Active convulsions","Altération de la conscience": "Altered mental status","Hypothermie": "Hypothermia","Fièvre": "Fever","Raideur de la nuque": "Stiff neck","Headache": "Headache","Hypoglycémie": "Hypoglycaemia","Altération de l'état mental ou agitation (pas de critères rouge)": "Altered mental status or agitation (no red criteria)","Faiblesse générale aiguë": "Acute general weakness","Plainte neurologique focale aiguë": "Acute focal neurologic complaint","Troubles visuels aigus": "Acute visual disturbance","Douleur sévère (pas de critères rouge)": "Severe pain (no red criteria)","Etat de conscience altéré (confus, agité, permanemment irritable or lethargique) avec raideur de la nuque, hypothermie ou fièvre": "Altered mental status (confused, restless, continuously irritable or lethargic) with stiff neck, hypothermia or fever","Agitation, irritabilité permanente ou léthargie": "Restless, continuously irritable or lethargic","Douleurs intenses": "Intense pain","Traumatisme à haut risque": "High-risk trauma","Empoisonnement/ingestion": "Poisoning/ingestion","Exposition aux produits chimiques dangereux": "Dangerous chemical exposure","Risque de perte d’un membre": "Threatened limb","Morsure de serpent": "Snake bite","Douleur thoracique aiguë (>50 ans)": "Acute chest pain (age > 50)","Douleur abdominale aiguë (>50 ans)": "Acute abdominal pain (age > 50)","ECG avec ischémie aiguë (si réalisé)": "ECG with acute ischaemia (if done)","Violent ou agressif": "Violent or aggressive","Enfant âgé de moins de 8 jours": "Age < 8 days","Âge < 2 mois et température < 36 ou > 39°C": "Age < 2 months and temperature < 36 or > 39 °C","Douleur testiculaire/scrotale aiguë ou priapisme": "Acute testicular/scrotal pain or priapism","Enceinte avec des critères Rouge d’adulte": "Pregnant with adult red criteria","Nouvelle éruption cutanée s’aggravant en quelques heures ou pelant (pas de critères Rouge)": "New rash worsening over hours or peeling (no red criteria)","Déformation aiguë visible d’un membre": "Acute visible limb deformity","Fracture ouverte": "Open fracture","Luxation suspectée": "Suspected dislocation","Autres traumatismes/brûlures (pas de critères Rouge)": "Other trauma/burns (no red criteria)","Diagnostic connu nécessitant une intervention chirurgicale urgente": "Known diagnosis requiring urgent surgical intervention","Agression sexuelle": "Sexual assault","Impossibilité d’uriner": "Unable to pass urine","Exposition nécessitant une prophylaxie à court terme": "Exposure requiring time-sensitive prophylaxis","Grossesse, référée pour des complications": "Pregnancy, referred for complications","Nourrisson âgé de 8 jours à 6 mois": "Age 8 days to 6 months","Malnutrition : émaciation sévère visible OU œdème des deux pieds": "Malnutrition: visible severe wasting OR oedema of both feet","Traumatisme/brûlure (pas de critères Rouge)": "Trauma/burn (no red criteria)","Céphalée (pas de critères Rouge)": "Headache (no red criteria)","Test EVDA": "AVPU test (EVDA)","EVDA": "AVPU","Eveillé": "Alert","Répond à la voix": "Responds to voice","Répond à la douleur": "Responds to pain","Absence de réponse": "Unresponsive","Echelle de coma de GLASCOW": "Glasgow Coma Scale","OUVERTURE DES YEUX": "EYE OPENING","RÉPONSE VERBALE": "VERBAL RESPONSE","RÉPONSE MOTRICE": "MOTOR RESPONSE","Spontané": "Spontaneous","À la demande": "To voice","À la douleur": "To pain","Aucune": "None","Orienté": "Oriented","Confuse": "Confused","Paroles inapropriées": "Inappropriate words","Sons incompréhensibles": "Incomprehensible sounds","Obéit aux commandes": "Obeys commands","Localise à la douleur": "Localises pain","Retrait à la douleur": "Withdraws from pain","Flexion anormale (décortication)": "Abnormal flexion (decorticate)","Extension anormale (décérébration)": "Abnormal extension (decerebrate)","Paramètres Anthropométriques": "Anthropometric parameters","POIDS (KG)": "WEIGHT (KG)","TAILLE (CM)": "HEIGHT (CM)","IMC (INDICE DE MASSE CORPORELLE)": "BMI (BODY MASS INDEX)","POIDS IDÉAL (KG) - SELON LORENTZ": "IDEAL WEIGHT (KG) - LORENTZ","SURFACE CORPORELLE (M²)": "BODY SURFACE AREA (M²)","TEMPÉRATURE (°C)": "TEMPERATURE (°C)","PAS (MMHG)": "SBP (MMHG)","PAD (MMHG)": "DBP (MMHG)","PAM (MMHG)": "MAP (MMHG)","TOUR DE TAILLE (CM)": "WAIST CIRCUMFERENCE (CM)","TOUR DE HANCHE (CM)": "HIP CIRCUMFERENCE (CM)","PB (CM)": "MUAC (CM)","FC (FRÉQUENCE CARDIAQUE)": "HR (HEART RATE)","FR (FRÉQUENCE RESPIRATOIRE)": "RR (RESPIRATORY RATE)","SAO2 (SATURATION EN OXYGÈNE)": "SPO2 (OXYGEN SATURATION)","TEMPS DE RECOLORATION CAPILLAIRE (EN SECONDES)": "CAPILLARY REFILL TIME (SECONDS)","PC (CM)": "HEAD CIRCUMFERENCE (CM)","IMC": "BMI","PAS": "SBP","PAD": "DBP","PAM": "MAP","FC": "HR","BASSE": "LOW","ÉLEVÉE": "HIGH","NORMAL": "NORMAL","Examens": "Tests","DDR": "LMP (DDR)","JJ/MM/AAAA": "DD/MM/YYYY","TEST DE GROSSESSE": "PREGNANCY TEST","(Pas fait)": "(Not done)","Non applicable": "Not applicable","Négatif": "Negative","Positif": "Positive","TAUX DE GLYCÉMIE (G/L)": "BLOOD GLUCOSE (G/L)","TAUX D'HÉMOGLOBINE (G/L)": "HAEMOGLOBIN (G/L)","TDR PALUDISME": "MALARIA RDT","LIBELLÉ": "ITEM","RÉSULTAT": "RESULT","Leucocytes": "Leukocytes","Nitrites": "Nitrite","Urobilinogènes": "Urobilinogen","Proteines": "Protein","PH": "pH","Sang": "Blood","Densité": "Specific gravity","Ascorbic acide": "Ascorbic acid","Cétones": "Ketones","Bilirubines": "Bilirubin","Glucose": "Glucose","Aspect": "Appearance","Couleur": "Colour","Négatif(Jaune)": "Negative (yellow)","Modéré 125": "Moderate 125","Positif(Any degree of uniform pink color)": "Positive (any degree of uniform pink colour)","Négatif(entre 3.2 et 16)": "Negative (between 3.2 and 16)","Négatif(Vert)": "Negative (green)","Négatif(5.0)": "Negative (5.0)","Négatif(1.000)": "Negative (1.000)","Négatif(0)": "Negative (0)","Limpide": "Clear","Mousseux": "Foamy","Trouble": "Cloudy","Gluant": "Sticky","Jaune clair": "Light yellow","eau de roche": "Colourless","Hematique": "Bloody","Jaune foncé": "Dark yellow","Cocacola": "Cola-coloured","Etat du patient": "Patient status","Température": "Temperature","Interprétation température": "Temperature interpretation","Interprétation IMC": "BMI interpretation","Poids idéal": "Ideal weight","Tour de taille": "Waist circumference","Tour de hanche": "Hip circumference","FR (Fréquence respiratoire)": "RR (Respiratory rate)","SAO2 (Saturation en Oxygène)": "SpO2 (Oxygen saturation)","Interprétation PAS": "SBP interpretation","Interprétation PAM": "MAP interpretation","FC (Fréquence cardiaque)": "HR (Heart rate)","Interprétation FC": "HR interpretation","Enceinte avec l’un des suivants": "Pregnant with any of the following","Test de grossesse": "Pregnancy test","Âge gestationnel": "Gestational age","Date probable d'accouchement": "Expected delivery date","Taux de glycémie": "Blood glucose","Taux d'hémoglobine": "Haemoglobin","TDR": "RDT","Patient critique": "Critical patient","Patient sévère": "Severe patient","Patient modéré": "Moderate patient","Traitement immédiat (Respect de l'heure d'or)": "Immediate treatment (respect the golden hour)","À surveiller": "To be monitored","Stable": "Stable","CRITIQUE": "CRITICAL","SÉVÈRE": "SEVERE","MODÉRÉ": "MODERATE","EN ATTENTE": "ON HOLD","DATE DE DÉBUT": "START DATE","DATE DE FIN": "END DATE","En attente uniquement": "On hold only","Filtrer": "Filter","Réinit.": "Reset","Rechercher..": "Search..","Exporter": "Export","Nouveau": "New","Lignes": "Rows","CODE TRIAGE": "TRIAGE CODE","NOM PATIENT": "PATIENT NAME","DATE": "DATE","PRIORITÉ": "PRIORITY","OPTION": "OPTION","Démarré par": "Started by","Historique de traitement": "Treatment history","Aucun traitement enregistré.": "No treatment recorded.","Reprendre le triage": "Resume triage","Consultation": "Consultation","Aucune donnée disponible": "No data available","Triage enregistré avec succès.": "Triage saved successfully.","Triage mis en attente.": "Triage put on hold."};
+function EN(fr){ return Object.prototype.hasOwnProperty.call(UI_EN, fr) ? UI_EN[fr] : fr; }
+function U(fr){ return S.lang === 'en' ? EN(fr) : fr; }
+function ue(fr){ return esc(U(fr)); }
+var FLABEL_EN = {temp:'Temperature (°C)', fc:'HR', fr:'RR', pas:'SBP', pad:'DBP', sao2:'SpO2', poids:'Weight (kg)', taille:'Height (cm)', glycemie:'Blood glucose (g/L)', hb:'Haemoglobin', ttaille:'Waist circumference', thanche:'Hip circumference', pb:'MUAC', trc:'Capillary refill', pc:'Head circumference'};
+
+/* ---------- cas ---------- */
+var DDR_TXT = dmy(addDays(TODAY, -16));
+var CASES = {
+ T01:{code:'TEST 01', patient:'P26-TEST01', start:'triage-new',
+  title:{fr:'Fièvre', en:'Fever'},
+  short:{fr:'Femme fébrile qui marche seule : motif, unités, examens (TDR, glycémie, grossesse).', en:'Woman with fever who walks alone: complaint, units, tests (RDT, glucose, pregnancy).'},
+  story:{fr:'Fièvre et courbatures depuis 2 jours. Elle marche seule, parle normalement et répond bien aux questions. Pas de maux de tête, pas de raideur de la nuque, pas de saignement.', en:'Fever and body aches for 2 days. She walks alone, talks normally and answers questions well. No headache, no neck stiffness, no bleeding.'},
+  measures:[
+   [{fr:'EVDA / Glasgow', en:'AVPU / Glasgow'}, {fr:'Éveillée · Glasgow 15 (E4 V5 M6)', en:'Awake · Glasgow 15 (E4 V5 M6)'}],
+   [{fr:'Température', en:'Temperature'}, {fr:'38,6 °C', en:'38.6 °C'}],
+   [{fr:'FC', en:'Heart rate'}, {fr:'104 /min', en:'104 /min'}],
+   [{fr:'FR', en:'Respiratory rate'}, {fr:'20 /min', en:'20 /min'}],
+   [{fr:'Tension (PAS/PAD)', en:'Blood pressure (SBP/DBP)'}, {fr:'118/76 mmHg', en:'118/76 mmHg'}],
+   [{fr:'SpO2', en:'SpO2'}, {fr:'97 %', en:'97 %'}],
+   [{fr:'Poids / taille', en:'Weight / height'}, {fr:'62 kg / 165 cm', en:'62 kg / 165 cm'}],
+   [{fr:'Glycémie', en:'Blood glucose'}, {fr:'0,95 g/L', en:'0.95 g/L'}],
+   [{fr:'TDR paludisme', en:'Malaria RDT'}, {fr:'positif', en:'positive'}],
+   [{fr:'Test de grossesse', en:'Pregnancy test'}, {fr:'négatif', en:'negative'}],
+   [{fr:'DDR', en:'Last menstrual period (LMP)'}, {fr:'{ddr}', en:'{ddr}'}],
+   [{fr:'Non faits / non mesurés', en:'Not done / not measured'}, {fr:'hémoglobine, bandelette urinaire, tour de taille, tour de hanche, PB, TRC, PC', en:'haemoglobin, urine dipstick, waist, hip, MUAC (PB), capillary refill, head circumference'}]
+  ],
+  tasks:{fr:['Triage → Nouveau triage. Trouvez la patiente (au moins 3 caractères) et vérifiez sa date de naissance.', 'Choisissez le motif dans la liste (cherchez « fièv »).', 'Choisissez seulement les signes que la patiente a vraiment.', "Saisissez EVDA, Glasgow et les mesures dans l'unité indiquée. Ne tapez rien dans les cases non mesurées.", 'Saisissez les examens (glycémie, TDR, test de grossesse, DDR).', 'Lisez le résumé, puis cliquez sur Soumettre.'],
+         en:['Triage → New triage. Find the patient (type at least 3 characters) and check her date of birth.', 'Choose the complaint from the list (search “fev”).', 'Select only the signs she really has.', 'Enter AVPU, Glasgow and the measurements in the unit shown. Type nothing in boxes that were not measured.', 'Enter the tests (glucose, RDT, pregnancy test, LMP).', 'Read the summary, then click Submit.']},
+  hints:{
+   1:{fr:'Dans CODE PATIENT, tapez « TEST 01 » (au moins 3 caractères). Choisissez P26-TEST01, puis vérifiez la date de naissance dans Détails.', en:'In PATIENT CODE, type “TEST 01” (at least 3 characters). Choose P26-TEST01, then check the date of birth in Details.'},
+   2:{fr:'Motif : tapez « fièv » et choisissez MG26. Signes : vous pouvez choisir « Fièvre » (DEFICIT NEUROLOGIQUE) ; seule, elle ne change pas la priorité. Avec un deuxième signe de cette liste (Headache, raideur de la nuque, altération de la conscience), la patiente passerait en rouge. CYANOSE CENTRALE : Non.', en:'Complaint: type “fev” and choose MG26. Signs: you may choose “Fever” (NEUROLOGICAL DEFICIT); alone, it does not change the priority. With a second sign from that list (Headache, Stiff neck, Altered mental status), she would become red. CENTRAL CYANOSIS: No.'},
+   3:{fr:'EVDA : un seul interrupteur (Eveillé). Glasgow : Spontané, Orienté, Obéit aux commandes. 38,6 se tape 38.6. Laissez vides les cases non mesurées : le 0 gris veut dire « vide ».', en:'AVPU: one switch only (Alert). Glasgow: Spontaneous, Oriented, Obeys commands. Type 38.6. Leave boxes that were not measured empty: the grey 0 means “empty”.'},
+   4:{fr:'Glycémie en g/L : tapez 0.95 (pas 95). TDR : Positif. Test de grossesse : Négatif. DDR au format JJ/MM/AAAA.', en:'Glucose in g/L: type 0.95 (not 95). RDT: Positive. Pregnancy test: Negative. LMP as DD/MM/YYYY.'},
+   5:{fr:'Lisez la priorité et chaque valeur avec son unité, puis cliquez sur Soumettre.', en:'Read the priority and each value with its unit, then click Submit.'}},
+  expect:{patient:'P26-TEST01', motifs:['MG26'], motifsOpt:['MG22','MG21','MG25'], signs:[], signsOpt:['Fièvre'], cyanose:'Non',
+   values:{temp:38.6, fc:104, fr:20, pas:118, pad:76, sao2:97, poids:62, taille:165, glycemie:0.95},
+   empty:['ttaille','thanche','pb','trc','pc','hb'], sel:{tdr:['Positif'], grossesse:['Négatif']}, ddr:true, priority:'MODERE'},
+  notes:{fr:['La fièvre est un motif de consultation. Dans DEFICIT NEUROLOGIQUE, Fièvre (ou Hypothermie), Headache, Raideur de la nuque et Altération de la conscience ne deviennent un critère rouge que si deux sont présents (méningite, paludisme grave…). Choisir « Fièvre » seule est accepté.', 'Glycémie en g/L (0.95), TDR positif : à saisir à l’étape 4.', 'Aucun signe rouge ou jaune : MODÉRÉ. Les signes vitaux ne sont pas à risque (T < 39 °C, FC < 130).'],
+         en:['Fever is a complaint. In NEUROLOGICAL DEFICIT, Fever (or Hypothermia), Headache, Stiff neck and Altered mental status become a red criterion only when two are present (meningitis, severe malaria…). Choosing “Fever” alone is accepted.', 'Glucose in g/L (0.95), positive RDT: entered in step 4.', 'No red or yellow sign: MODERATE. Vital signs are not high-risk (T < 39 °C, HR < 130).']}
+ },
+ T02:{code:'TEST 02', patient:'P26-TEST02', start:'triage-new',
+  title:{fr:'Accident de moto', en:'Motorcycle crash'},
+  short:{fr:'Cas du cours : deux motifs, signes dans la bonne case, poids non mesuré.', en:'The lecture case: two complaints, signs in the right box, weight not measured.'},
+  story:{fr:"Accident de moto il y a une heure : il roulait lentement, a glissé et est tombé sur le côté ; il n'a pas été projeté. Plaie de la jambe droite qui ne saigne plus (pansement) et écorchures sur les deux avant-bras ; pas de déformation. Douleur sévère ; il ne peut pas marcher sans aide à cause de sa jambe. Il parle normalement et respire sans difficulté.", en:'Motorcycle crash one hour ago: he was riding slowly, slipped and fell on his side; he was not thrown off. Wound on the right leg that no longer bleeds (dressing) and abrasions on both forearms; no deformity. Severe pain; he cannot walk without help because of his leg. He talks normally and breathes without difficulty.'},
+  measures:[
+   [{fr:'EVDA / Glasgow', en:'AVPU / Glasgow'}, {fr:'Éveillé · Glasgow 15 (E4 V5 M6)', en:'Awake · Glasgow 15 (E4 V5 M6)'}],
+   [{fr:'Tension (PAS/PAD)', en:'Blood pressure (SBP/DBP)'}, {fr:'128/84 mmHg', en:'128/84 mmHg'}],
+   [{fr:'FC', en:'Heart rate'}, {fr:'96 /min', en:'96 /min'}],
+   [{fr:'FR', en:'Respiratory rate'}, {fr:'22 /min', en:'22 /min'}],
+   [{fr:'SpO2', en:'SpO2'}, {fr:'97 %', en:'97 %'}],
+   [{fr:'Température', en:'Temperature'}, {fr:'36,9 °C', en:'36.9 °C'}],
+   [{fr:'Taille', en:'Height'}, {fr:'172 cm', en:'172 cm'}],
+   [{fr:'Poids', en:'Weight'}, {fr:'non mesuré', en:'not measured'}],
+   [{fr:'Glycémie', en:'Blood glucose'}, {fr:'0,95 g/L', en:'0.95 g/L'}],
+   [{fr:'Hémoglobine', en:'Haemoglobin'}, {fr:'non faite', en:'not done'}],
+   [{fr:'TDR / test de grossesse', en:'RDT / pregnancy test'}, {fr:'non fait / non applicable (homme)', en:'not done / not applicable (man)'}],
+   [{fr:'Non mesurés', en:'Not measured'}, {fr:'tour de taille, tour de hanche, PB, TRC, PC ; pas de bandelette', en:'waist, hip, MUAC (PB), capillary refill, head circumference; no dipstick'}]
+  ],
+  tasks:{fr:['Trouvez le patient et vérifiez sa date de naissance (14/03/1998).', 'Choisissez deux motifs : la plaie et les écorchures.', 'Choisissez seulement les signes du patient, chacun dans sa case.', 'Saisissez EVDA, Glasgow et les mesures. Poids non mesuré : case vide.', 'Examens : glycémie ; TDR non fait (vide ou « (Pas fait) ») ; test de grossesse « Non applicable » (homme).', "Lisez le résumé, cliquez sur Soumettre, puis déconnectez-vous (menu de l'avatar, en haut à droite)."],
+         en:['Find the patient and check his date of birth (14/03/1998).', 'Choose two complaints: the wound and the abrasions.', 'Select only his signs, each in its own box.', 'Enter AVPU, Glasgow and the measurements. Weight not measured: leave empty.', 'Tests: glucose; RDT not done (empty or “(Not done)”); pregnancy test “Not applicable” (man).', 'Read the summary, click Submit, then log out (avatar menu, top right).']},
+  hints:{
+   1:{fr:'Deux dossiers peuvent porter le même nom. Choisissez celui qui est né le 14/03/1998 (regardez Détails).', en:'Two records can have the same name. Choose the one born on 14/03/1998 (look at Details).'},
+   2:{fr:'Motifs : cherchez « plaie », puis « abras ». Signes : TRAUMATISME/AUTRES → « Autres traumatismes/brûlures (pas de critères Rouge) » ; DEFICIT NEUROLOGIQUE → « Douleur sévère (pas de critères rouge) ». « Incapacité à parler ou à marcher sans aide » est un signe de détresse respiratoire : pas pour lui.', en:'Complaints: search “wound”, then “abras”. Signs: TRAUMA/OTHER → “Other trauma/burns (no red criteria)”; NEUROLOGICAL DEFICIT → “Severe pain (no red criteria)”. “Unable to talk or walk unaided” is a breathing-distress sign: not for him.'},
+   3:{fr:"Poids non mesuré : ne tapez rien (un 0 tapé fausse l'IMC). 36,9 se tape 36.9.", en:'Weight not measured: type nothing (a typed 0 makes the BMI wrong). Type 36.9.'},
+   4:{fr:'Hémoglobine non faite : case vide. TDR : (Pas fait) ou vide. Test de grossesse : Non applicable.', en:'Haemoglobin not done: leave empty. RDT: (Not done) or empty. Pregnancy test: Not applicable.'},
+   5:{fr:"Lisez la priorité et les valeurs, puis cliquez sur Soumettre. Ensuite : menu de l'avatar → Se déconnecter.", en:'Read the priority and the values, then click Submit. Then: avatar menu → Log out.'}},
+  expect:{patient:'P26-TEST02', motifs:['NC91.Z','NC30.2'], motifsOpt:[], signs:['Autres traumatismes/brûlures (pas de critères Rouge)','Douleur sévère (pas de critères rouge)'], signsOpt:[], cyanose:'Non',
+   values:{pas:128, pad:84, fc:96, fr:22, sao2:97, temp:36.9, taille:172, glycemie:0.95},
+   empty:['poids','ttaille','thanche','pb','trc','pc','hb'], sel:{tdr:['(Pas fait)',null], grossesse:['Non applicable']}, priority:'SEVERE'},
+  notes:{fr:['« Incapacité à parler ou à marcher sans aide » est un signe de DETRESSE RESPIRATOIRE (rouge). Il ne marche pas à cause de sa jambe : on ne le choisit pas.', 'Deux signes jaunes (traumatisme sans critère rouge, douleur sévère) : SÉVÈRE.', 'Poids non mesuré : case vide. Un 0 tapé est enregistré comme une vraie valeur.', 'Discussion : s’il avait été projeté de la moto, en cas de choc à grande vitesse ou avec des lésions importantes de plusieurs régions (polytraumatisme), ce serait un « Traumatisme à haut risque » (rouge). Des écorchures superficielles ne font pas un polytraumatisme.', 'Deux dossiers « PATIENT TEST 02 » : vérifier la date de naissance.'],
+         en:['“Unable to talk or walk unaided” is a RESPIRATORY DISTRESS sign (red). He cannot walk because of his leg: do not select it.', 'Two yellow signs (trauma without red criteria, severe pain): SEVERE.', 'Weight not measured: leave empty. A typed 0 is saved as a real value.', 'Discussion: if he had been thrown from the motorcycle, in a high-speed crash or with significant injuries in several body areas (polytrauma), it would be “High-risk trauma” (red). Superficial abrasions do not make polytrauma.', 'Two records named “PATIENT TEST 02”: check the date of birth.']}
+ },
+ T03:{code:'TEST 03', patient:'P26-TEST03', start:'triage-new',
+  title:{fr:"Crise d'asthme", en:'Asthma attack'},
+  short:{fr:'Détresse respiratoire : plusieurs signes dans la même case, patient critique.', en:'Respiratory distress: several signs in one box, critical patient.'},
+  story:{fr:"Crise d'asthme depuis 2 heures. Il respire très vite et ne peut ni finir ses phrases ni marcher, parce qu'il manque d'air. Il utilise les muscles du cou pour respirer. Sifflement audible. Conscient ; lèvres non bleues.", en:'Asthma attack for 2 hours. He breathes very fast and cannot finish his sentences or walk, because he is short of breath. He uses his neck muscles to breathe. Audible wheeze. Conscious; lips not blue.'},
+  measures:[
+   [{fr:'EVDA / Glasgow', en:'AVPU / Glasgow'}, {fr:'Éveillé · Glasgow 15 (E4 V5 M6)', en:'Awake · Glasgow 15 (E4 V5 M6)'}],
+   [{fr:'FR', en:'Respiratory rate'}, {fr:'34 /min', en:'34 /min'}],
+   [{fr:'SpO2', en:'SpO2'}, {fr:'88 %', en:'88 %'}],
+   [{fr:'FC', en:'Heart rate'}, {fr:'118 /min', en:'118 /min'}],
+   [{fr:'Tension (PAS/PAD)', en:'Blood pressure (SBP/DBP)'}, {fr:'135/85 mmHg', en:'135/85 mmHg'}],
+   [{fr:'Température', en:'Temperature'}, {fr:'37,0 °C', en:'37.0 °C'}],
+   [{fr:'Poids / taille', en:'Weight / height'}, {fr:'non mesurés (assis, essoufflé)', en:'not measured (sitting, breathless)'}],
+   [{fr:'Glycémie', en:'Blood glucose'}, {fr:'1,10 g/L', en:'1.10 g/L'}],
+   [{fr:'Hémoglobine', en:'Haemoglobin'}, {fr:'non faite', en:'not done'}],
+   [{fr:'TDR / test de grossesse', en:'RDT / pregnancy test'}, {fr:'non fait / non applicable (homme)', en:'not done / not applicable (man)'}],
+   [{fr:'Non mesurés', en:'Not measured'}, {fr:'tour de taille, tour de hanche, PB, TRC, PC ; pas de bandelette', en:'waist, hip, MUAC (PB), capillary refill, head circumference; no dipstick'}]
+  ],
+  tasks:{fr:['Trouvez le patient et vérifiez sa date de naissance.', 'Motif : cherchez « dysp ».', 'DETRESSE RESPIRATOIRE : choisissez tous les signes présents. Autres cases : seulement si le signe est là.', 'Saisissez EVDA, Glasgow et les mesures. Poids et taille : vides.', 'Examens : glycémie ; TDR non fait (vide ou « (Pas fait) ») ; test de grossesse « Non applicable » (homme).', 'Lisez le résumé et la dernière ligne, puis cliquez sur Soumettre (pas « Mettre en attente »).'],
+         en:['Find the patient and check his date of birth.', 'Complaint: search “dysp”.', 'RESPIRATORY DISTRESS: select every sign he has. Other boxes: only if the sign is present.', 'Enter AVPU, Glasgow and the measurements. Weight and height: empty.', 'Tests: glucose; RDT not done (empty or “(Not done)”); pregnancy test “Not applicable” (man).', 'Read the summary and its last line, then click Submit (not “Put on hold”).']},
+  hints:{
+   1:{fr:'Tapez « TEST 03 », choisissez P26-TEST03 et vérifiez la date de naissance (22/01/1981).', en:'Type “TEST 03”, choose P26-TEST03 and check the date of birth (22/01/1981).'},
+   2:{fr:"Motif : « dysp » → MD11.5. DETRESSE RESPIRATOIRE : « Respiration très rapide », « Incapacité à parler ou à marcher sans aide » (ici c'est juste : il manque d'air) et « Utilisation des muscles accessoires (cou, intercostaux, abdominaux) ». Les items « allaiter » et « hochement de tête » sont pour l'enfant. « Respiration sifflante (pas de critères rouge) » sert seulement quand il n'y a pas de signe rouge : ici inutile (accepté si choisi). CYANOSE CENTRALE : Non.", en:'Complaint: “dysp” → MD11.5. RESPIRATORY DISTRESS: “Very fast breathing”, “Unable to talk or walk unaided” (right here: he is short of breath) and “Accessory muscle use (neck, intercostal, abdominal)”. The “breastfeed” and “head nodding” items are for children. “Wheezing (no red criteria)” is only for patients without red signs: not needed here (accepted if chosen). CENTRAL CYANOSIS: No.'},
+   3:{fr:'SpO2 : tapez 88. Poids et taille non mesurés : cases vides.', en:'SpO2: type 88. Weight and height not measured: leave empty.'},
+   4:{fr:'Glycémie : 1.10. TDR : (Pas fait) ou vide. Test de grossesse : Non applicable.', en:'Glucose: 1.10. RDT: (Not done) or empty. Pregnancy test: Not applicable.'},
+   5:{fr:"Patient critique : la dernière ligne dit « Traitement immédiat ». D'abord en salle de réanimation et appeler le médecin : la saisie ne doit pas retarder les soins. Puis cliquez sur Soumettre ; ne laissez pas le triage en attente.", en:'Critical patient: the last line says “Immediate treatment”. First the resuscitation area and call the doctor: data entry must not delay care. Then click Submit; do not leave the triage on hold.'}},
+  expect:{patient:'P26-TEST03', motifs:['MD11.5'], motifsOpt:['MD11.C','MD12'],
+   signs:['Respiration très rapide','Incapacité à parler ou à marcher sans aide','Utilisation des muscles accessoires (cou, intercostaux, abdominaux)'],
+   signsOpt:['Respiration sifflante (pas de critères rouge)'], cyanose:'Non',
+   values:{fr:34, sao2:88, fc:118, pas:135, pad:85, temp:37, glycemie:1.1},
+   empty:['poids','taille','ttaille','thanche','pb','trc','pc','hb'], sel:{tdr:['(Pas fait)',null], grossesse:['Non applicable']}, priority:'CRITIQUE'},
+  notes:{fr:['Ici « Incapacité à parler ou à marcher sans aide » est juste : il ne parle pas et ne marche pas parce qu’il manque d’air (comparer avec TEST 02).', 'Plusieurs signes rouges dans la même case : CRITIQUE, « Traitement immédiat ».', 'Signes vitaux à haut risque (IITT) : FR > 30, SpO2 < 92 % → monter la priorité ou faire voir tout de suite par le clinicien responsable.', 'Patient critique : d’abord en salle de réanimation et appeler le médecin ; la saisie ne doit pas retarder les soins. Ensuite, soumettre le triage : ne jamais le laisser « en attente ».'],
+         en:['Here “Unable to talk or walk unaided” is right: he cannot talk or walk because he is short of breath (compare with TEST 02).', 'Several red signs in one box: CRITICAL, “Immediate treatment”.', 'High-risk vital signs (IITT): RR > 30, SpO2 < 92 % → up-triage or immediate review by the supervising clinician.', 'Critical patient: first the resuscitation area and call the doctor; data entry must not delay care. Then submit the triage: never leave it “on hold”.']}
+ },
+ T04:{code:'TEST 04', patient:'P26-TEST04', start:'triage-list', paper:true,
+  title:{fr:'Triage en attente à corriger', en:'Pending triage to correct'},
+  short:{fr:'Reprendre un triage en attente, trouver et corriger trois erreurs.', en:'Resume a pending triage, find and correct three errors.'},
+  story:{fr:"Douleur abdominale modérée depuis hier ; il a vomi deux fois mais boit sans vomir. Il marche seul et parle normalement. Un collègue a commencé ce triage dans le système puis l'a mis en attente. Les bonnes valeurs sont sur la fiche papier.", en:'Moderate abdominal pain since yesterday; he vomited twice but drinks without vomiting. He walks alone and talks normally. A colleague started this triage in the system and put it on hold. The correct values are on the paper form.'},
+  measures:[
+   [{fr:'EVDA / Glasgow', en:'AVPU / Glasgow'}, {fr:'Éveillé · Glasgow 15 (E4 V5 M6)', en:'Awake · Glasgow 15 (E4 V5 M6)'}],
+   [{fr:'Température', en:'Temperature'}, {fr:'36,7 °C', en:'36.7 °C'}],
+   [{fr:'FC', en:'Heart rate'}, {fr:'88 /min', en:'88 /min'}],
+   [{fr:'FR', en:'Respiratory rate'}, {fr:'18 /min', en:'18 /min'}],
+   [{fr:'Tension (PAS/PAD)', en:'Blood pressure (SBP/DBP)'}, {fr:'124/78 mmHg', en:'124/78 mmHg'}],
+   [{fr:'SpO2', en:'SpO2'}, {fr:'98 %', en:'98 %'}],
+   [{fr:'Taille', en:'Height'}, {fr:'176 cm', en:'176 cm'}],
+   [{fr:'Poids', en:'Weight'}, {fr:'non mesuré', en:'not measured'}],
+   [{fr:'Glycémie / hémoglobine', en:'Glucose / haemoglobin'}, {fr:'non faites', en:'not done'}],
+   [{fr:'TDR / test de grossesse', en:'RDT / pregnancy test'}, {fr:'non fait / non applicable (homme)', en:'not done / not applicable (man)'}],
+   [{fr:'Non mesurés', en:'Not measured'}, {fr:'tour de taille, tour de hanche, PB, TRC, PC ; pas de bandelette', en:'waist, hip, MUAC (PB), capillary refill, head circumference; no dipstick'}]
+  ],
+  tasks:{fr:['Triage → Liste des triages. Activez « En attente uniquement », puis cliquez sur Filtrer.', 'Cliquez sur « Reprendre le triage » pour PATIENT TEST 04 (ne créez pas de nouveau triage).', 'Comparez chaque étape avec la fiche papier : il y a trois erreurs.', 'Corrigez, lisez le résumé, puis cliquez sur Soumettre.'],
+         en:['Triage → Triage list. Switch on “On hold only”, then click Filter.', 'Click “Resume triage” for PATIENT TEST 04 (do not create a new triage).', 'Compare each step with the paper form: there are three errors.', 'Correct them, read the summary, then click Submit.']},
+  hints:{
+   list:{fr:'Activez « En attente uniquement », cliquez sur Filtrer, puis sur « Reprendre le triage » dans la ligne de PATIENT TEST 04.', en:'Switch on “On hold only”, click Filter, then “Resume triage” on the PATIENT TEST 04 row.'},
+   1:{fr:'Le patient est déjà choisi : vérifiez la date de naissance (09/06/1991), puis Suivant.', en:'The patient is already chosen: check the date of birth (09/06/1991), then Next.'},
+   2:{fr:"Une case importante de l'étape 2 est vide.", en:'An important box in step 2 is empty.'},
+   3:{fr:'Comparez chaque mesure avec la fiche papier : l’unité de la température ? Le poids a-t-il été mesuré ?', en:'Compare each measurement with the paper form: the temperature unit? Was the weight measured?'},
+   4:{fr:'Rien à corriger ici si les examens sont « non faits » : glycémie vide, TDR (Pas fait), test de grossesse Non applicable.', en:'Nothing to correct here if the tests are “not done”: glucose empty, RDT (Not done), pregnancy test Not applicable.'},
+   5:{fr:'Le résumé ne montre ni le motif ni le poids : vérifiez-les aux étapes 2 et 3 avant de cliquer sur Soumettre.', en:'The summary shows neither the complaint nor the weight: check them in steps 2 and 3 before clicking Submit.'}},
+  expect:{patient:'P26-TEST04', resume:true, motifs:['MD81'], motifsOpt:['MD90.1','MD90.0'], signs:[], signsOpt:[], cyanose:'Non',
+   values:{temp:36.7, fc:88, fr:18, pas:124, pad:78, sao2:98, taille:176},
+   empty:['poids','ttaille','thanche','pb','trc','pc','hb','glycemie'], sel:{tdr:['(Pas fait)',null], grossesse:['Non applicable']}, priority:'MODERE'},
+  notes:{fr:['Reprendre le triage en attente (pas un deuxième triage pour le même patient).', 'Trois erreurs : température 98 (valeur en °F ; 36,7 °C), poids 0 (non mesuré : vide), motif vide (MD81).', 'Le résumé ne montre ni le motif ni le poids : il faut vérifier aux étapes 2 et 3.', 'A vomi deux fois mais boit sans vomir ≠ « Vomit tout » : pas de signe. MODÉRÉ.'],
+         en:['Resume the pending triage (not a second triage for the same patient).', 'Three errors: temperature 98 (a °F value; 36.7 °C), weight 0 (not measured: empty), complaint empty (MD81).', 'The summary shows neither the complaint nor the weight: check them in steps 2 and 3.', 'Vomited twice but drinks without vomiting ≠ “Vomiting everything”: no sign. MODERATE.']}
+ }
+};
+var CASE_ORDER = ['T01','T02','T03','T04'];
+var GCS_OK = ['Spontané','Orienté','Obéit aux commandes'];
+
+/* explications quand un signe est choisi à tort (byCase : texte propre à un cas) */
+var SIGN_NOTES = {
+ 'Incapacité à parler ou à marcher sans aide':{fr:"C'est un signe de détresse respiratoire : le patient ne peut pas parler ou marcher parce qu'il manque d'air. Le cas ne le décrit pas.", en:'This is a breathing-distress sign: the patient cannot talk or walk because of breathlessness. The case does not describe it.',
+   byCase:{T02:{fr:"C'est un signe de détresse respiratoire : le patient ne peut pas parler ou marcher parce qu'il manque d'air. Ici, il ne marche pas à cause de sa jambe : on ne le choisit pas ; sinon le patient devient « critique ».", en:'This is a breathing-distress sign: the patient cannot talk or walk because of breathlessness. Here he cannot walk because of his leg: do not select it; otherwise the patient becomes “critical”.'}}},
+ 'Fièvre':{fr:'Le cas ne décrit pas de fièvre.', en:'The case does not describe fever.'},
+ 'Faiblesse générale aiguë':{fr:"Le cas ne décrit pas de faiblesse générale aiguë (faiblesse de tout le corps, d'apparition récente).", en:'The case does not describe acute general weakness (weakness of the whole body, of recent onset).',
+   byCase:{T01:{fr:'La patiente marche seule : pas de faiblesse générale aiguë.', en:'She walks alone: no acute general weakness.'}}},
+ 'Traumatisme à haut risque':{fr:'Le cas ne décrit pas de traumatisme à haut risque.', en:'The case does not describe high-risk trauma.',
+   byCase:{T02:{fr:"Le cas dit : basse vitesse, pas projeté de la moto, plaie qui ne saigne plus, pas de déformation. S'il avait été projeté ou en cas de choc à grande vitesse, ce serait juste (rouge).", en:'The case says: low speed, not thrown from the motorcycle, wound no longer bleeding, no deformity. If he had been thrown off or in a high-speed crash, it would be right (red).'}}},
+ 'Vomit tout':{fr:'« Vomit tout » : le patient ne garde rien, ni liquide ni nourriture. Le cas ne le décrit pas.', en:'“Vomiting everything”: the patient keeps nothing down, neither fluids nor food. The case does not describe it.',
+   byCase:{T04:{fr:'Il a vomi deux fois mais boit sans vomir : ce n’est pas « vomit tout ».', en:'He vomited twice but drinks without vomiting: that is not “Vomiting everything”.'}}},
+ 'Douleur abdominale aiguë (>50 ans)':{fr:'Ce critère rouge est pour les plus de 50 ans ; ici, moins de 50 ans.', en:'This red criterion is for patients over 50; this patient is younger.'},
+ 'Douleur thoracique aiguë (>50 ans)':{fr:'Ce critère rouge est pour une douleur thoracique chez les plus de 50 ans.', en:'This red criterion is for chest pain in patients over 50.'},
+ 'Douleur sévère (pas de critères rouge)':{fr:'Le cas ne décrit pas de douleur sévère.', en:'The case does not describe severe pain.'}
+};
+/* libellés enfant acceptés à la place du libellé adulte (avec remarque) */
+var CHILD_EQ = {'Traumatisme/brûlure (pas de critères Rouge)':'Autres traumatismes/brûlures (pas de critères Rouge)', 'Douleurs intenses':'Douleur sévère (pas de critères rouge)'};
+function signNote(sg, cid){ var n = SIGN_NOTES[sg]; if (!n) return null; return (n.byCase && n.byCase[cid]) || n; }
+
+/* ---------- textes de la partie exercice (FR / EN) ---------- */
+var TXT = {
+ fr:{
+  tbText:"données fictives · ce n'est pas le système CURY", tbCase:'Fiche du cas', tbHome:'Changer de cas', tbGuide:'Guide du formateur', tbFree:'Pratique libre', tbCaseS:'Fiche', tbHomeS:'Cas',
+  startTitle:'Système CURY · exercice de triage',
+  startLead:"Cet exercice reproduit les écrans de triage du système informatisé du CURY. Les patients sont fictifs (TEST). On peut se tromper sans risque : à la fin de chaque cas, une correction explique ce qu'il faut vérifier.",
+  nameLabel:'Votre nom (facultatif, pour le résultat)', choose:'Choisissez un exercice', freeDesc:"Triage de n'importe quel patient TEST, sans correction.",
+  startNote:"Rien n'est envoyé : tout reste sur cet appareil (seuls votre nom et la langue choisie sont gardés). Recharger la page remet l'exercice à zéro.",
+  loggedOut:"Vous êtes déconnecté(e). Si vous quittez le poste, verrouillez aussi l'écran : touche Windows + L.",
+  cpTitle:'Fiche du cas', cpMeasures:'Ce qui a été mesuré', cpPaper:'Fiche papier (valeurs exactes)', cpTasks:'À faire', cpHint:"Indice pour l'étape en cours", cpRestart:'Recommencer ce cas', brand:'Exercice', footer:'Exercice de formation · données fictives · ce n’est pas le système CURY', cpOpen:'Voir la fiche', cpCollapse:'Réduire', cpBarIdle:'Touchez pour voir le cas et les mesures.', stepWord:'Étape',
+  phoneNote:"Sur téléphone : la fiche du cas (histoire, mesures, à faire) reste en bas de l'écran. Touchez-la pour l'ouvrir ou la réduire.",
+  cpFreeText:"Dans CODE PATIENT, tapez « TEST » pour trouver un patient fictif (P26-TEST01 à P26-TEST08), ou créez un patient dans Accueil - Enregistrement. Inventez un cas ou utilisez une fiche papier. À la fin, l'exercice montre la priorité calculée et pourquoi (sans correction).",
+  stepHint:'Tapez « TEST » pour trouver les patients fictifs (P26-TEST01 à P26-TEST08).', notFound:'Patient introuvable ?', createLink:"Créer un patient d'exercice",
+  hintShort:'Exercice : tapez « TEST » (au moins 3 caractères).', hintNone:'Exercice : patient introuvable ? Créez-le dans Accueil - Enregistrement.',
+  regNote:"Écran simplifié pour l'exercice : l'écran réel d'enregistrement n'a pas été photographié. Utilisez un nom fictif. Les patients créés restent jusqu'au rechargement de la page.",
+  regErrName:'Saisissez le nom.', regErrSex:'Choisissez le sexe.', regErrDob:'Date de naissance au format JJ/MM/AAAA (pas dans le futur).', regSaved:'Patient enregistré :', regReq:'* obligatoire',
+  woman:'femme', man:'homme', years:'ans', born:'né(e) le', hint:'Indice', help:'Aide',
+  notIncluded:"Ce menu n'est pas inclus dans l'exercice.",
+  notIncludedReg:"Dans le système réel, les nouveaux patients sont enregistrés dans « Accueil - Enregistrement ». Cet écran n'est pas reproduit.",
+  notPatientFile:"Ouverture du dossier patient : non incluse dans l'exercice.",
+  choosePatient:"Choisissez d'abord un patient (CODE PATIENT).",
+  resTitle:'Correction', resPoints:'points', resPrio:'Priorité calculée', resExp:'attendue', resWhy:'Pourquoi cette priorité ?',
+  resNoSign:'Aucun signe rouge ou jaune : MODÉRÉ.', resVitals:'Signes vitaux à haut risque (IITT) : monter la priorité ou faire voir tout de suite par le clinicien responsable',
+  resTime:'Temps', resList:'Voir la liste des triages', resNext:'Cas suivant', resRetry:'Refaire ce cas', resCopy:'Copier le résultat', resCopied:'Résultat copié.', resCopyManual:'Copiez le texte ci-dessous :',
+  resEnd:"Fin du travail : se déconnecter (menu de l'avatar) et verrouiller l'écran (Windows + L).",
+  resPending:"Triage mis en attente : il n'est pas terminé. Il reste « EN ATTENTE » jusqu'à « Reprendre le triage » puis « Soumettre ».",
+  freeTitle:'Triage enregistré (exercice)', close:'Fermer', print:'Imprimer', guideTitle:'Guide du formateur',
+  dataNote:"Exercice : priorité calculée selon les critères IITT (voir le guide). Le système réel peut afficher autre chose.",
+  red:'rouge', yellow:'jaune', twoOf:'deux signes parmi', minutes:'min',
+  ok:'Juste', ko:'À revoir', none:'aucun', empty:'vide'
+ },
+ en:{
+  tbText:'fictitious data · translated screens · not the CURY system', tbCase:'Case card', tbHome:'Change case', tbGuide:'Trainer guide', tbFree:'Free practice', tbCaseS:'Card', tbHomeS:'Cases',
+  startTitle:'CURY system · triage practice',
+  startLead:'This practice copies the triage screens of the CURY computer system. Patients are fictitious (TEST). Mistakes are safe: after each case, a correction explains what to check.',
+  nameLabel:'Your name (optional, for the result)', choose:'Choose an exercise', freeDesc:'Triage any TEST patient, without correction.',
+  startNote:'Nothing is sent: everything stays on this device (only your name and the chosen language are kept). Reloading the page resets the practice.',
+  loggedOut:'You are logged out. If you leave the computer, also lock the screen: Windows key + L.',
+  cpTitle:'Case card', cpMeasures:'What was measured', cpPaper:'Paper form (correct values)', cpTasks:'To do', cpHint:'Hint for this step', cpRestart:'Restart this case', brand:'Practice', footer:'Training exercise · fictitious data · not the CURY system', cpOpen:'Show card', cpCollapse:'Hide', cpBarIdle:'Tap to see the case and the measurements.', stepWord:'Step',
+  phoneNote:'On a phone: the case card (story, measurements, to do) stays at the bottom of the screen. Tap it to open or hide it.',
+  cpFreeText:'In PATIENT CODE, type “TEST” to find a fictitious patient (P26-TEST01 to P26-TEST08), or create a patient in Reception - Registration. Make up a case or use a paper form. At the end, the practice shows the calculated priority and why (no correction).',
+  stepHint:'Type “TEST” to find the fictitious patients (P26-TEST01 to P26-TEST08).', notFound:'Patient not found?', createLink:'Create a practice patient',
+  hintShort:'Practice: type “TEST” (at least 3 characters).', hintNone:'Practice: patient not found? Create one in Reception - Registration.',
+  regNote:'Simplified screen for the practice: the real registration screen was not photographed. Use a fictitious name. Patients you create stay until the page is reloaded.',
+  regErrName:'Enter the last name.', regErrSex:'Choose the sex.', regErrDob:'Date of birth as DD/MM/YYYY (not in the future).', regSaved:'Patient registered:', regReq:'* required',
+  woman:'woman', man:'man', years:'years', born:'born', hint:'Hint', help:'Help',
+  notIncluded:'This menu is not included in the practice.',
+  notIncludedReg:'In the real system, new patients are registered in “Accueil - Enregistrement” (Reception - Registration). This screen is not copied here.',
+  notPatientFile:'Opening the patient record is not included in the practice.',
+  choosePatient:'First choose a patient (PATIENT CODE).',
+  resTitle:'Correction', resPoints:'points', resPrio:'Calculated priority', resExp:'expected', resWhy:'Why this priority?',
+  resNoSign:'No red or yellow sign: MODERATE.', resVitals:'High-risk vital signs (IITT): up-triage or immediate review by the supervising clinician',
+  resTime:'Time', resList:'See the triage list', resNext:'Next case', resRetry:'Redo this case', resCopy:'Copy the result', resCopied:'Result copied.', resCopyManual:'Copy the text below:',
+  resEnd:'End of work: log out (avatar menu) and lock the screen (Windows + L).',
+  resPending:'Triage put on hold: it is not finished. It stays “ON HOLD” until “Resume triage” then “Submit”.',
+  freeTitle:'Triage saved (practice)', close:'Close', print:'Print', guideTitle:'Trainer guide',
+  dataNote:'Practice: priority calculated with the IITT criteria (see the guide). The real system may show something else.',
+  red:'red', yellow:'yellow', twoOf:'two signs among', minutes:'min',
+  ok:'Right', ko:'To review', none:'none', empty:'empty'
+ }
+};
+
+var GENERIC_HINTS = {
+ 1:{fr:'Tapez au moins 3 caractères du code ou du nom (par exemple « TEST »), choisissez le patient, puis vérifiez la date de naissance dans Détails. Patient introuvable : créez-le dans Accueil - Enregistrement.', en:'Type at least 3 characters of the code or name (for example “TEST”), choose the patient, then check the date of birth in Details. Patient not found: create one in Reception - Registration.'},
+ 2:{fr:'Choisissez le motif dans la liste (tapez un mot pour chercher). Choisissez seulement les signes présents, chacun dans sa case : les signes décident de la priorité.', en:'Choose the complaint from the list (type a word to search). Select only the signs present, each in its own box: the signs decide the priority.'},
+ 3:{fr:'EVDA : un seul interrupteur. Glasgow : yeux, verbal, moteur. Tapez chaque valeur dans l’unité indiquée. Non mesuré : laissez vide (0 gris = vide).', en:'AVPU: one switch only. Glasgow: eyes, verbal, motor. Type each value in the unit shown. Not measured: leave empty (grey 0 = empty).'},
+ 4:{fr:'Seulement les examens faits au triage. Non fait : vide ou « (Pas fait) ». Homme : test de grossesse « Non applicable ».', en:'Only the tests done at triage. Not done: empty or “(Not done)”. Man: pregnancy test “Not applicable”.'},
+ 5:{fr:'Lisez la priorité et chaque valeur, puis cliquez sur Soumettre. « Mettre en attente » seulement pour finir plus tard.', en:'Read the priority and every value, then click Submit. “Put on hold” only to finish later.'},
+ list:{fr:'La priorité vient de ce qui a été saisi. EN ATTENTE = pas terminé : cliquez sur « Reprendre le triage », puis sur Soumettre. « Résumé » ouvre le résumé.', en:'The priority comes from what was entered. ON HOLD = not finished: click “Resume triage”, then Submit. “Summary” opens the summary.'}
+};
+
+/* ---------- état ---------- */
+var S = {
+  lang: (store.get('lang') === 'en' ? 'en' : 'fr'), learner: store.get('learner') || '',
+  loggedIn:false, mode:null, caseId:null, caseStart:0, caseOpen:false,
+  view:'triage-new', step:1, d:newData(), editing:null, detailCode:null,
+  triages:[], t04code:null, lastResult:null,
+  filter:{from:ymd(addDays(TODAY, -30)), to:ymd(TODAY), pending:false, q:'', n:10}
+};
+function t(k){ return (TXT[S.lang] && TXT[S.lang][k]) || TXT.fr[k] || k; }
+function L(o){ if (!o) return ''; return (o[S.lang] !== undefined ? o[S.lang] : o.fr); }
+function fill(s){ return String(s).replace('{ddr}', DDR_TXT); }
+function bornTxt(p){ return S.lang === 'en' ? 'born' : (p.sex === 'F' ? 'née le' : 'né le'); }
+function accountName(){ var n = (S.learner || '').trim(); return n || (S.lang === 'en' ? 'Practice account' : "Compte d'exercice"); }
+
+/* ---------- calculs ---------- */
+function interp(d){
+  var p = pById(d.patient), r = {};
+  var poids = parseNum(d.poids), taille = parseNum(d.taille), temp = parseNum(d.temp), pas = parseNum(d.pas), pad = parseNum(d.pad), fc = parseNum(d.fc);
+  var ok = function(n){ return n !== null && !isNaN(n); };
+  if (ok(poids) && ok(taille) && taille > 0){ r.imc = poids / Math.pow(taille / 100, 2); r.imcI = r.imc < 18.5 ? 'BASSE' : (r.imc < 25 ? 'NORMALE' : 'ÉLEVÉE'); }
+  if (ok(taille) && taille > 0 && p){ r.pideal = p.sex === 'F' ? taille - 100 - (taille - 150) / 2 : taille - 100 - (taille - 150) / 4; }
+  if (ok(poids) && ok(taille) && poids > 0 && taille > 0) r.sc = Math.sqrt(poids * taille / 3600);
+  if (ok(pas) && ok(pad)){ r.pam = (pas + 2 * pad) / 3; r.pamI = r.pam < 65 ? 'BASSE' : (r.pam <= 100 ? 'NORMALE' : 'ÉLEVÉE'); }
+  if (ok(temp)) r.tempI = temp < 36 ? 'BASSE' : (temp <= 37.5 ? 'NORMALE' : 'ÉLEVÉE');
+  if (ok(pas)) r.pasI = pas < 90 ? 'BASSE' : (pas < 140 ? 'NORMAL' : 'ÉLEVÉE');
+  if (ok(fc)) r.fcI = fc < 60 ? 'BASSE' : (fc <= 100 ? 'NORMALE' : 'ÉLEVÉE');
+  return r;
+}
+function allSigns(d){
+  var out = [];
+  SIGN_BOXES.forEach(function(b){ (d[b.k] || []).forEach(function(s){ out.push({text:s, box:b.k, boxLabel:b.label}); }); });
+  return out;
+}
+function computePriority(d){
+  var p = pById(d.patient), age = p ? ageOf(p.dob) : 30, R = [], g1 = [], g2 = [];
+  allSigns(d).forEach(function(s){
+    var c = SIGN_INFO[s.text] ? SIGN_INFO[s.text].c : 'Y';
+    var tf = s.boxLabel + ' : ' + s.text, te = EN(s.boxLabel) + ': ' + EN(s.text);
+    if (c === 'R') R.push({c:'R', fr:tf, en:te});
+    else if (c === 'Y') R.push({c:'Y', fr:tf, en:te});
+    else if (c === 'RY') R.push({c:(age < 12 ? 'R' : 'Y'), fr:tf, en:te});
+    else if (c === 'G1') g1.push(s.text);
+    else if (c === 'G2') g2.push(s.text);
+  });
+  /* IITT adulte : deux parmi altération de la conscience / hypothermie ou fièvre / raideur de la nuque / céphalée (hypothermie et fièvre = un seul élément) */
+  var g1n = 0, tempSeen = false;
+  g1.forEach(function(x){ if (x === 'Hypothermie' || x === 'Fièvre'){ if (!tempSeen){ tempSeen = true; g1n++; } } else g1n++; });
+  if (g1n >= 2) R.push({c:'R', fr:'DEFICIT NEUROLOGIQUE : ' + TXT.fr.twoOf + ' ' + g1.join(', '), en:'NEUROLOGICAL DEFICIT: ' + TXT.en.twoOf + ' ' + g1.map(function(x){ return EN(x); }).join(', ')});
+  else if (g1.indexOf('Altération de la conscience') >= 0) R.push({c:'Y', fr:'DEFICIT NEUROLOGIQUE : Altération de la conscience (seule : jaune)', en:'NEUROLOGICAL DEFICIT: Altered mental status (alone: yellow)'});
+  /* IITT enfant : deux signes de déshydratation sévère = rouge */
+  if (g2.length >= 2) R.push({c:'R', fr:'CIRCULATION (enfant) : ' + TXT.fr.twoOf + ' ' + g2.join(', ') + ' (déshydratation sévère)', en:'CIRCULATION (child): ' + TXT.en.twoOf + ' ' + g2.map(function(x){ return EN(x); }).join(', ') + ' (severe dehydration)'});
+  if (d.cyanose === 'Oui') R.push({c:'R', fr:'CYANOSE CENTRALE : Oui', en:'CENTRAL CYANOSIS: Yes'});
+  if ((d.evda || []).indexOf('A') >= 0) R.push({c:'R', fr:'EVDA : Absence de réponse', en:'AVPU: Unresponsive'});
+  var trc = parseNum(d.trc), fc = parseNum(d.fc);
+  if (trc !== null && !isNaN(trc) && trc > 3) R.push({c:'R', fr:'TRC > 3 secondes', en:'Capillary refill > 3 seconds'});
+  if (fc !== null && !isNaN(fc) && fc > 0 && (fc < 50 || fc > 150)) R.push({c:'R', fr:'FC < 50 ou > 150', en:'Heart rate < 50 or > 150'});
+  var level = R.some(function(x){ return x.c === 'R'; }) ? 'CRITIQUE' : (R.some(function(x){ return x.c === 'Y'; }) ? 'SEVERE' : 'MODERE');
+  return {level:level, reasons:R, g1:g1, g1n:g1n, g2:g2};
+}
+function riskVitals(d){
+  var out = [], fc = parseNum(d.fc), fr = parseNum(d.fr), temp = parseNum(d.temp), sao2 = parseNum(d.sao2);
+  var ok = function(n){ return n !== null && !isNaN(n) && n !== 0; };
+  if (ok(fc) && (fc < 60 || fc > 130)) out.push({fr:'FC ' + fc + ' (< 60 ou > 130)', en:'HR ' + fc + ' (< 60 or > 130)'});
+  if (ok(fr) && (fr < 10 || fr > 30)) out.push({fr:'FR ' + fr + ' (< 10 ou > 30)', en:'RR ' + fr + ' (< 10 or > 30)'});
+  if (ok(temp) && temp <= 45 && (temp < 36 || temp > 39)) out.push({fr:'T ' + String(temp).replace('.', ',') + ' °C (< 36 ou > 39)', en:'T ' + temp + ' °C (< 36 or > 39)'});
+  if (ok(sao2) && sao2 < 92) out.push({fr:'SpO2 ' + sao2 + ' % (< 92 %)', en:'SpO2 ' + sao2 + ' % (< 92 %)'});
+  var ev = d.evda || [];
+  if (ev.length && ev.indexOf('E') < 0) out.push({fr:'EVDA différent de « Eveillé »', en:'AVPU not “Alert”'});
+  return out;
+}
+
+/* ---------- liste déroulante (type select2) ---------- */
+var S2open = null;
+document.addEventListener('mousedown', function(e){ if (S2open && !S2open.wrap.contains(e.target)) S2open.close(); });
+function S2(host, o){
+  this.o = {multiple:false, items:[], value:null, placeholder:'', allowClear:true, minChars:0, placeholderOption:false, searchable:true, onChange:function(){}};
+  for (var k in o) this.o[k] = o[k];
+  this.host = host; this.val = this.o.multiple ? (this.o.value || []).slice() : this.o.value; this.q = ''; this.hi = -1; this.cur = [];
+  host.innerHTML = ''; this.wrap = document.createElement('div'); this.wrap.className = 's2-wrap'; host.appendChild(this.wrap);
+  this.build();
+}
+S2.prototype.txt = function(v){ for (var i = 0; i < this.o.items.length; i++) if (this.o.items[i].v === v) return this.o.items[i].t; return v; };
+S2.prototype.isOpen = function(){ return !this.drop.hidden; };
+S2.prototype.build = function(){
+  var o = this.o, self = this;
+  this.touch = COARSE && o.multiple;
+  if (o.multiple){
+    this.wrap.innerHTML = '<div class="s2 s2-m' + (this.touch ? ' s2-touch' : '') + '" role="combobox" aria-expanded="false"><ul class="s2-chips"></ul></div><div class="s2-drop" hidden>' + (this.touch ? '<div class="s2-sbox"><input class="s2-search s2-msearch" type="text" autocomplete="off" placeholder="' + ue('Rechercher...') + '" aria-label="' + ue('Rechercher') + '"></div>' : '') + '<ul class="s2-list" role="listbox"></ul></div>';
+  } else {
+    var srch = o.searchable && !(COARSE && !o.minChars && o.items.length <= 10);
+    this.wrap.innerHTML = '<div class="s2 s2-s" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox"><span class="s2-txt"></span>' + (o.allowClear ? '<span class="s2-x" title="' + ue('Effacer') + '">×</span>' : '') + '<span class="s2-arr">' + IC.chevD + '</span></div><div class="s2-drop" hidden>' + (srch ? '<div class="s2-sbox"><input class="s2-search" type="text" autocomplete="off" aria-label="' + ue('Rechercher') + '"></div>' : '') + '<ul class="s2-list" role="listbox"></ul></div>';
+  }
+  this.box = this.wrap.querySelector('.s2'); this.drop = this.wrap.querySelector('.s2-drop'); this.list = this.wrap.querySelector('.s2-list');
+  this.hasSearch = !!this.drop.querySelector('.s2-search');
+  if (this.touch){
+    this.inp = this.msearch = this.drop.querySelector('.s2-msearch');
+    this.msearch.addEventListener('input', function(){ self.q = self.msearch.value; self.hi = 0; self.renderList(); });
+    this.msearch.addEventListener('keydown', function(e){ self.keys(e); });
+  }
+  this.renderBox();
+  this.box.addEventListener('mousedown', function(e){
+    if (e.target.closest('.s2-x') || e.target.closest('.s2-chip-x')) { e.preventDefault(); return; }
+    if (o.multiple && self.touch){ e.preventDefault(); if (self.isOpen()) self.close(); else self.open(); return; }
+    if (o.multiple){ if (!self.isOpen()) self.open(); else self.focusInput(); if (e.target.tagName !== 'INPUT') e.preventDefault(); return; }
+    e.preventDefault(); if (self.isOpen()) self.close(); else self.open();
+  });
+  this.box.addEventListener('click', function(e){
+    var x = e.target.closest('.s2-chip-x');
+    if (x){ self.toggle(x.getAttribute('data-v')); return; }
+    if (e.target.closest('.s2-x')){ self.set(null); self.close(); }
+  });
+  this.box.addEventListener('keydown', function(e){
+    if (!o.multiple && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown')){ e.preventDefault(); self.open(); }
+  });
+  this.list.addEventListener('mousedown', function(e){
+    var li = e.target.closest('li[data-v]'); if (!li) return; e.preventDefault(); self.pick(li.getAttribute('data-v'));
+  });
+};
+S2.prototype.renderBox = function(){
+  var o = this.o, self = this;
+  if (o.multiple){
+    var ul = this.box.querySelector('.s2-chips');
+    ul.innerHTML = this.val.map(function(v){ return '<li class="s2-chip"><span class="s2-chip-x" data-v="' + esc(v) + '" title="' + ue('Retirer') + '">×</span><span>' + esc(self.txt(v)) + '</span></li>'; }).join('') + (this.touch ? '<li class="s2-mph" aria-hidden="true">' + IC.chevD + '</li>' : '<li class="s2-in"><input class="s2-search" type="text" autocomplete="off" aria-label="' + ue('Rechercher') + '"></li>');
+    if (!this.touch){
+      this.inp = ul.querySelector('.s2-search'); this.inp.value = this.q;
+      this.inp.addEventListener('input', function(){ self.q = self.inp.value; self.hi = 0; if (!self.isOpen()) self.open(); else self.renderList(); });
+      this.inp.addEventListener('keydown', function(e){ self.keys(e); });
+      this.inp.addEventListener('focus', function(){ if (!self.isOpen()) self.open(); });
+    }
+  } else {
+    var sp = this.box.querySelector('.s2-txt');
+    if (this.val === null || this.val === undefined){ sp.textContent = o.placeholder || U('Sélectionner...'); sp.className = 's2-txt ph'; }
+    else { sp.textContent = this.txt(this.val); sp.className = 's2-txt'; }
+    var x = this.box.querySelector('.s2-x'); if (x) x.style.visibility = (this.val === null || this.val === undefined) ? 'hidden' : 'visible';
+  }
+};
+S2.prototype.filtered = function(){
+  var q = norm(this.q.trim());
+  if (!q) return this.o.items.slice();
+  return this.o.items.filter(function(i){ return norm(i.t + ' ' + (i.k || '')).indexOf(q) >= 0; });
+};
+S2.prototype.renderList = function(){
+  var o = this.o, self = this, q = this.q.trim();
+  if (o.minChars && q.length < o.minChars){ this.list.innerHTML = '<li class="s2-msg">Please enter ' + o.minChars + ' or more characters</li>' + (o.hintShort ? '<li class="s2-msg s2-train">' + o.hintShort + '</li>' : ''); this.cur = []; return; }
+  var items = this.filtered();
+  if (o.placeholderOption && !q) items = [{v:'', t:U('Sélectionner...'), ph:true}].concat(items);
+  this.cur = items;
+  if (!items.length){ this.list.innerHTML = '<li class="s2-msg">No results found</li>' + (o.hintNone ? '<li class="s2-msg s2-train">' + o.hintNone + '</li>' : ''); return; }
+  if (this.hi >= items.length) this.hi = items.length - 1;
+  this.list.innerHTML = items.map(function(i, idx){
+    var sel = o.multiple ? self.val.indexOf(i.v) >= 0 : (self.val === i.v || (i.ph && (self.val === null || self.val === undefined)));
+    return '<li data-v="' + esc(i.v) + '" role="option" aria-selected="' + sel + '" class="' + (sel ? 'sel ' : '') + (idx === self.hi ? 'hi ' : '') + (i.ph ? 'ph' : '') + '">' + esc(i.t) + '</li>';
+  }).join('');
+};
+S2.prototype.open = function(){
+  var self = this;
+  if (S2open && S2open !== this) S2open.close();
+  if (COARSE && typeable(document.activeElement) && !this.wrap.contains(document.activeElement)) document.activeElement.blur();
+  if (isPhone()) this.reveal();
+  S2open = this; this.drop.hidden = false; this.box.classList.add('open'); this.box.setAttribute('aria-expanded', 'true');
+  this.hi = -1;
+  if (!this.o.multiple){
+    this.q = '';
+    var si = this.drop.querySelector('.s2-search');
+    if (si){ si.value = ''; si.oninput = function(){ self.q = si.value; self.hi = 0; self.renderList(); }; si.onkeydown = function(e){ self.keys(e); }; if (!COARSE || this.o.minChars) setTimeout(function(){ si.focus(); }, 0); }
+  } else if (this.touch){ this.q = ''; this.msearch.value = ''; }
+  else { setTimeout(function(){ if (self.inp) self.inp.focus(); }, 0); }
+  this.renderList(); this.place();
+};
+/* téléphone : remonter la case sous la bande d'exercice pour que la liste (et le clavier) ne la cachent pas */
+S2.prototype.reveal = function(){
+  var r = this.box.getBoundingClientRect(), top = cssPx('--tbh') + 8, bottom = window.innerHeight - cssPx('--cpb');
+  var n = this.o.items.length + (this.o.placeholderOption ? 1 : 0), need = this.o.minChars ? 9999 : Math.min(300, (this.hasSearch ? 56 : 0) + Math.min(n, 6) * 42 + 8);
+  if (r.top < top || bottom - r.bottom < need) window.scrollBy(0, r.top - top);
+};
+S2.prototype.place = function(){
+  var ph = isPhone(), r = this.box.getBoundingClientRect(), need = ph ? Math.min(300, this.drop.offsetHeight + 4) : 300, bottom = window.innerHeight - (ph ? cssPx('--cpb') : 0);
+  this.drop.classList.toggle('up', r.bottom + need > bottom && r.top - (ph ? cssPx('--tbh') : 0) > need);
+};
+S2.prototype.close = function(){
+  if (this.drop.contains(document.activeElement)) document.activeElement.blur();
+  this.drop.hidden = true; this.box.classList.remove('open'); this.box.setAttribute('aria-expanded', 'false');
+  if (S2open === this) S2open = null;
+  if (this.o.multiple && this.inp && this.q){ this.q = ''; this.inp.value = ''; }
+};
+S2.prototype.focusInput = function(){ if (this.inp) this.inp.focus(); };
+S2.prototype.keys = function(e){
+  var n = this.cur.length;
+  if (e.key === 'ArrowDown'){ e.preventDefault(); if (!this.isOpen()) this.open(); this.hi = Math.min(n - 1, this.hi + 1); this.renderList(); this.scrollHi(); }
+  else if (e.key === 'ArrowUp'){ e.preventDefault(); this.hi = Math.max(0, this.hi - 1); this.renderList(); this.scrollHi(); }
+  else if (e.key === 'Enter'){ e.preventDefault(); if (this.cur[this.hi]) this.pick(this.cur[this.hi].v); else if (n === 1) this.pick(this.cur[0].v); }
+  else if (e.key === 'Escape'){ this.close(); if (!this.o.multiple) this.box.focus(); }
+  else if (e.key === 'Tab'){ this.close(); }
+  else if (e.key === 'Backspace' && this.o.multiple && !this.touch && !this.inp.value && this.val.length){ this.toggle(this.val[this.val.length - 1]); }
+};
+S2.prototype.scrollHi = function(){ var li = this.list.querySelector('li.hi'); if (li && li.scrollIntoView) li.scrollIntoView({block:'nearest'}); };
+S2.prototype.pick = function(v){
+  if (this.o.multiple){ this.q = ''; if (this.touch) this.msearch.value = ''; this.toggle(v); if (!this.touch) this.focusInput(); }
+  else { this.set(v === '' ? null : v); this.close(); if (!COARSE) this.box.focus(); }
+};
+S2.prototype.toggle = function(v){
+  var i = this.val.indexOf(v);
+  if (i >= 0) this.val.splice(i, 1); else this.val.push(v);
+  this.renderBox(); if (this.isOpen()) this.renderList();
+  this.o.onChange(this.val.slice());
+};
+S2.prototype.set = function(v){ this.val = v; this.renderBox(); this.o.onChange(v); };
+function items(arr){ return arr.map(function(x){ return {v:x, t:U(x), k:x + ' ' + EN(x)}; }); }
+
+/* ---------- barre d'exercice, menu, barre du haut ---------- */
+function renderTrainbar(){
+  var label = '';
+  if (S.loggedIn) label = S.mode === 'case' ? (CASES[S.caseId].code + ' · ' + L(CASES[S.caseId].title)) : t('tbFree');
+  $('#trainbar').innerHTML = '<span class="tb-tag">' + (S.lang === 'en' ? 'PRACTICE' : 'EXERCICE') + '</span><span class="tb-text">' + esc(t('tbText')) + '</span>' +
+    (label ? '<span class="tb-case">' + esc(label) + '</span>' : '') + '<span class="tb-sp"></span>' +
+    (S.loggedIn ? '<button class="tbtn tb-cbtn" data-tb="case"><span class="tb-l">' + esc(t('tbCase')) + '</span><span class="tb-s">' + esc(t('tbCaseS')) + '</span></button><button class="tbtn" data-tb="home"><span class="tb-l">' + esc(t('tbHome')) + '</span><span class="tb-s">' + esc(t('tbHomeS')) + '</span></button>' : '') +
+    '<button class="tbtn" data-tb="guide"><span class="tb-l">' + esc(t('tbGuide')) + '</span><span class="tb-s">Guide</span></button>' +
+    '<span class="tb-lang"><button class="tbtn' + (S.lang === 'fr' ? ' on' : '') + '" data-lang="fr">FR</button><button class="tbtn' + (S.lang === 'en' ? ' on' : '') + '" data-lang="en">EN</button></span>';
+  setTbh();
+}
+function setTbh(){ var h = $('#trainbar').offsetHeight || 44; document.documentElement.style.setProperty('--tbh', h + 'px'); }
+
+var MENU = [
+  ['dashboard', IC.dash, 'Tableau de bord', false],
+  ['accueil-enr', IC.door, 'Accueil - Enregistrement', true],
+  ['accueil-info', IC.layers, 'Accueil - Information', true],
+  ['triage', IC.sort, 'Triage', 'group'],
+  ['consult', IC.clinic, 'Consultations', true],
+  ['bloc', IC.bed, 'Bloc Opératoire', true],
+  ['hosp', IC.hosp, 'Hospitalisations', true],
+  ['morgue', IC.archive, 'Morgue', true],
+  ['personnel', IC.user, 'Personnel', true],
+  ['caisse', IC.cart, 'Caisse Cession', true]
+];
+function renderMenu(){
+  var h = '<div class="brand"><span class="brand-t">' + esc(t('brand')) + '</span></div><ul class="menu">';
+  MENU.forEach(function(m){
+    if (m[3] === 'group'){
+      var inTriage = S.view.indexOf('triage') === 0;
+      h += '<li class="' + (inTriage ? 'active' : '') + '"><a data-nav="triage-new">' + m[1] + '<span>' + ue(m[2]) + '</span><span class="chev">' + IC.chevD + '</span></a><ul class="sub">' +
+        '<li><a data-nav="triage-new" class="' + (S.view === 'triage-new' ? 'active' : '') + '">' + ue('Nouveau triage') + '</a></li>' +
+        '<li><a data-nav="triage-list" class="' + ((S.view === 'triage-list' || S.view === 'triage-detail') ? 'active' : '') + '">' + ue('Liste des triages') + '</a></li>' +
+        '<li><a data-nav="triage-stats" class="' + (S.view === 'triage-stats' ? 'active' : '') + '">' + ue('Statistiques') + '</a></li></ul></li>';
+    } else {
+      h += '<li class="' + (S.view === m[0] ? 'active' : '') + '"><a data-nav="' + m[0] + '">' + m[1] + '<span>' + ue(m[2]) + '</span>' + (m[3] ? '<span class="chev">' + IC.chevR + '</span>' : '') + '</a></li>';
+    }
+  });
+  $('#menu').innerHTML = h + '</ul>';
+}
+function renderNavbar(){
+  $('#navbar').innerHTML = '<button class="nb-burger" data-nb="burger" aria-label="Menu">' + IC.burger + '</button>' +
+    '<div class="nb-search">' + IC.search + '<input id="gsearch" type="text" placeholder="' + ue('Rechercher un patient (Ctrl+/)') + '" autocomplete="off" aria-label="' + ue('Rechercher un patient') + '"><div id="gdrop" class="nb-drop" hidden></div></div>' +
+    '<div class="nb-icons"><button class="nb-ic" data-nb="na" aria-label="Langue">' + IC.globe + '</button><button class="nb-ic" data-nb="na" aria-label="Raccourcis">' + IC.grid + '</button><button class="nb-ic" data-nb="na" aria-label="Thème">' + IC.sun + '</button><button class="nb-ic" data-nb="na" aria-label="Notifications">' + IC.bell + '</button>' +
+    '<button class="avatar" data-nb="avatar" aria-label="Compte">' + AVATAR + '<span class="dot"></span></button>' +
+    '<div class="dropdown" id="avMenu" hidden><div class="dd-head"><b>' + esc(accountName()) + '</b><small>' + (S.lang === 'en' ? 'Practice account' : "Compte d'exercice") + '</small></div>' +
+    '<button class="dd-item" data-nb="na">' + IC.userSm + ' ' + ue('Mon profil') + '</button><button class="dd-item" data-nb="logout">' + IC.logout + ' ' + ue('Se déconnecter') + '</button></div></div>';
+}
+
+/* ---------- vues ---------- */
+function render(){
+  $('#footer').textContent = t('footer');
+  renderMenu(); renderTrainbar();
+  var c = $('#content');
+  if (S2open) S2open.close();
+  if (S.view === 'triage-list') c.innerHTML = viewList();
+  else if (S.view === 'triage-stats') c.innerHTML = viewStats();
+  else if (S.view === 'triage-detail') c.innerHTML = viewDetail();
+  else if (S.view === 'accueil-enr'){ c.innerHTML = viewReg(); mountReg(); }
+  else { S.view = 'triage-new'; c.innerHTML = viewNew(); mountStep(); }
+  renderCasePanel();
+}
+function go(view){ S.view = view; document.body.classList.remove('menu-open'); render(); window.scrollTo(0, 0); }
+/* changer d'étape ; sur téléphone : réduire la fiche et remonter au début de l'étape */
+function stepGo(n){ S.step = n; if (isPhone()) S.caseOpen = false; render(); if (isPhone()) toWizard(); }
+function toWizard(){ var w = $('.wz-head'); if (w) window.scrollBy(0, w.getBoundingClientRect().top - cssPx('--tbh') - 8); }
+
+function helpBtn(){ return '<button class="btn btn-info" data-act="help">' + IC.help + ' ' + ue("Besoin d'aide ?") + '</button>'; }
+function bcHTML(page){ return '<h4 class="bc"><span class="muted">' + ue('Triage') + ' /</span> ' + esc(page) + '</h4>'; }
+
+var STEPS = [['Informations du patient', ''], ['Consultation/plaintes', 'Motifs de concultation/plainte'], ['Paramètres', 'Prise de paramètre'], ['Examen', 'Examens complémentaires'], ['Résumé', 'Résumé du triage']];
+function viewNew(){
+  var steps = STEPS;
+  var head = steps.map(function(s, i){
+    var n = i + 1, cls = n === S.step ? 'act' : (n < S.step ? 'done' : '');
+    return (i ? '<span class="wz-sep">' + IC.chevR + '</span>' : '') + '<button class="step ' + cls + '" data-step="' + n + '"><span class="step-n">' + n + '</span><span><span class="step-t">' + ue(s[0]) + '</span>' + (s[1] ? '<span class="step-s">' + ue(s[1]) + '</span>' : '') + '</span></button>';
+  }).join('');
+  var alert = S.lang === 'en' ?
+    "<div><b>Medical triage:</b> Assess the patient's clinical condition to determine the degree of urgency. Follow the steps of the <b>Wizard</b>: Identification, Complaints, Parameters, Tests and Summary. The system will automatically calculate the <b>severity level</b> to direct the patient.</div>" :
+    "<div><b>Triage Médical :</b> Évaluez l'état clinique du patient pour déterminer son degré d'urgence. Suivez les étapes du <b>Wizard</b> : Identification, Motifs, Paramètres, Examens, et Résumé. Le système calculera automatiquement le <b>niveau de gravité</b> pour orienter le patient.</div>";
+  return '<div class="pg-head">' + bcHTML(U('Nouveau triage')) + '<span class="sp"></span>' + helpBtn() + '</div>' +
+    '<div class="alert-info">' + IC.info + alert + '</div>' +
+    (S.editing ? '<div class="resume-note">' + ue('Reprise du triage') + ' <b>' + esc(S.editing) + '</b> ' + ue('(en attente)') + '</div>' : '') +
+    '<div class="card"><div class="wz-head">' + head + '</div><div class="wz-body" id="wzBody">' + stepHTML() + '</div></div>';
+}
+function navHTML(last){
+  return '<div class="st-nav"><button class="btn ' + (S.step === 1 ? '' : 'btn-primary') + '" data-act="prev"' + (S.step === 1 ? ' disabled' : '') + '>' + IC.chevL + ' ' + ue('Précédent') + '</button><span class="sp"></span>' +
+    (last ? '<button class="btn btn-warning" data-act="hold">' + ue('Mettre en attente') + '</button><button class="btn btn-primary" data-act="submit">' + ue('Soumettre') + '</button>' : '<button class="btn btn-primary" data-act="next">' + ue('Suivant') + ' ' + IC.chevR + '</button>') + '</div>';
+}
+function stepHTML(){
+  var d = S.d, h = '';
+  if (S.step === 1){
+    var p = pById(d.patient);
+    h = '<div class="st-head"><h6>' + ue('Informations du patient') + '</h6><small>' + ue('Entrer le code patient') + '</small></div>' +
+      '<div class="fld st1-code"><label class="lbl" for="selPatientBox">' + ue('CODE PATIENT') + '</label><div id="selPatient"></div>' +
+      (p ? '' : '<div class="train-note"><span class="tb-tag">' + (S.lang === 'en' ? 'PRACTICE' : 'EXERCICE') + '</span><span>' + esc(t('stepHint')) + ' ' + esc(t('notFound')) + '</span><button class="linkbtn" data-act="newpatient">' + esc(t('createLink')) + '</button></div>') + '</div>';
+    if (p){
+      var row = function(k, v){ return '<p>' + ue(k) + '<span>' + v + '</span></p>'; };
+      h += '<div class="st1-det"><div class="st1-av">' + AVATAR_BIG + '<h3>' + esc(p.name) + '</h3></div><div class="det"><h5>' + ue('Détails') + '</h5>' +
+        row('Email:', 'N/A') + '<p>' + ue('Type de patient:') + '<span class="badge bl-success">' + ue('NORMALE') + '</span></p>' + row('Date de naissance:', dmyISO(p.dob)) +
+        row('Réligion:', 'N/A') + row('État matrimonial:', 'N/A') + row('Téléphone:', 'N/A') + row('Adresse:', 'N/A') +
+        row('Nationalité:', ue('Cameroun')) + row('Groupe ethnique:', 'N/A') + '</div></div>';
+    }
+    h += navHTML(false);
+  } else if (S.step === 2){
+    h = '<div class="st-head"><h6>' + ue('Consultations/plaintes') + '</h6><small>' + ue('Motifs de consultation/plainte') + '</small></div>' +
+      '<div class="fld"><label class="lbl">' + ue('MOTIF DE CONSULTATION') + '</label><div id="selMotif"></div></div><div class="grid3">';
+    SIGN_BOXES.forEach(function(b){ h += '<div class="fld"><label class="lbl">' + ue(b.label) + '</label><div id="sel_' + b.k + '"></div></div>'; });
+    h += '<div class="fld"><label class="lbl">' + ue('CYANOSE CENTRALE') + '</label><div id="selCyan"></div></div></div>' + navHTML(false);
+  } else if (S.step === 3){
+    h = '<div class="st-head"><h6>' + ue('Paramètres') + '</h6><small>' + ue('Prise de paramètres') + '</small></div><h5 class="sec first">' + ue('Test EVDA') + '</h5><div class="lbl">' + ue('EVDA') + '</div><div class="evda">';
+    EVDA.forEach(function(e){ h += '<label class="evd"><input type="checkbox" data-evda="' + e[0] + '"' + (d.evda.indexOf(e[0]) >= 0 ? ' checked' : '') + '><span class="evd-sw"></span>' + ue(e[1]) + '</label>'; });
+    h += '</div><h5 class="sec">' + ue('Echelle de coma de GLASCOW') + '</h5><div class="grid3 al">' +
+      '<div class="fld"><div class="gcs-pic">' + GCS_PIC.e + '</div><label class="lbl">' + ue('OUVERTURE DES YEUX') + '</label><div id="selGE"></div></div>' +
+      '<div class="fld"><div class="gcs-pic">' + GCS_PIC.v + '</div><label class="lbl">' + ue('RÉPONSE VERBALE') + '</label><div id="selGV"></div></div>' +
+      '<div class="fld"><div class="gcs-pic">' + GCS_PIC.m + '</div><label class="lbl">' + ue('RÉPONSE MOTRICE') + '</label><div id="selGM"></div></div></div>' +
+      '<h5 class="sec">' + ue('Paramètres Anthropométriques') + '</h5><div class="grid3 al num">';
+    FIELDS3.forEach(function(f){
+      var id = 'f_' + f[0];
+      h += '<div class="fld"><label class="lbl" for="' + id + '">' + ue(f[1]) + ' <span class="badge" data-b="' + f[0] + '" hidden></span></label>' +
+        (f[2] ? '<input class="inp calc" id="' + id + '" data-c="' + f[0] + '" readonly tabindex="-1" placeholder="0">' : '<input class="inp" id="' + id + '" data-f="' + f[0] + '" inputmode="decimal" autocomplete="off" placeholder="0" value="' + esc(d[f[0]]) + '">') + '</div>';
+    });
+    h += '</div>' + navHTML(false);
+  } else if (S.step === 4){
+    h = '<div class="st-head"><h6>' + ue('Examens') + '</h6><small>' + ue('Examens complémentaires') + '</small></div><div class="grid3 al num">' +
+      '<div class="fld"><label class="lbl" for="f_ddr">' + ue('DDR') + '</label><input class="inp" id="f_ddr" data-f="ddr" placeholder="' + ue('JJ/MM/AAAA') + '" autocomplete="off" value="' + esc(d.ddr) + '"></div>' +
+      '<div class="fld"><label class="lbl">' + ue('TEST DE GROSSESSE') + '</label><div id="selGross"></div></div>' +
+      '<div class="fld"><label class="lbl" for="f_glyc">' + ue('TAUX DE GLYCÉMIE (G/L)') + '</label><input class="inp" id="f_glyc" data-f="glycemie" inputmode="decimal" placeholder="0" autocomplete="off" value="' + esc(d.glycemie) + '"></div>' +
+      '<div class="fld"><label class="lbl" for="f_hb">' + ue("TAUX D'HÉMOGLOBINE (G/L)") + '</label><input class="inp" id="f_hb" data-f="hb" inputmode="decimal" placeholder="0" autocomplete="off" value="' + esc(d.hb) + '"></div>' +
+      '<div class="fld"><label class="lbl">' + ue('TDR PALUDISME') + '</label><div id="selTdr"></div></div></div>' +
+      '<table class="tbl urine"><thead><tr><th>' + ue('LIBELLÉ') + '</th><th>' + ue('RÉSULTAT') + '</th></tr></thead><tbody>' +
+      URINE.map(function(u, i){ return '<tr><td>' + ue(u[0]) + '</td><td><div id="selU' + i + '"></div></td></tr>'; }).join('') + '</tbody></table>' + navHTML(false);
+  } else {
+    h = '<div class="st-head"><h6>' + ue('Résumé') + '</h6><small>' + ue('Résumé du triage') + '</small></div>' + summaryHTML(d) + navHTML(true);
+  }
+  return h;
+}
+function sumRow(k, v){ return '<p class="sum-row"><span class="k">' + ue(k) + (S.lang === 'en' ? ':' : ' :') + '</span>' + v + '</p>'; }
+function na(v, unit){ var s = String(v == null ? '' : v).trim(); return (s === '' ? 'N/A' : esc(s)) + (unit ? ' ' + unit : ''); }
+function summaryHTML(d){
+  var pr = computePriority(d), P = PRIO[pr.level], I = interp(d), en = S.lang === 'en', c = en ? ':' : ' :';
+  var sel = function(arr){ return arr && arr.length ? esc(arr.map(function(x){ return U(x); }).join(' ; ')) : 'N/A'; };
+  var it = function(x){ return x ? ue(x) : 'N/A'; };
+  var gross = d.grossesse || '', ddr = parseDMY(d.ddr), ga = 'N/A', dpa = 'N/A';
+  if (gross === 'Positif' && ddr){ var days = Math.floor((TODAY - ddr) / 86400000); if (days >= 0){ ga = Math.floor(days / 7) + (en ? ' wk + ' : ' SA + ') + (days % 7) + (en ? ' d' : ' j'); dpa = dmy(addDays(ddr, 280)); } }
+  var left = sumRow('Etat du patient', '<span>' + ue(P.etat) + '</span>') +
+    sumRow('Température', na(d.temp, '°C')) + sumRow('Interprétation température', it(I.tempI)) +
+    sumRow('Interprétation IMC', it(I.imcI)) + sumRow('Poids idéal', I.pideal !== undefined ? fmtC(I.pideal) : 'N/A') +
+    sumRow('Tour de taille', na(d.ttaille)) + sumRow('Tour de hanche', na(d.thanche)) +
+    sumRow('FR (Fréquence respiratoire)', na(d.fr, 'cpm')) + sumRow('SAO2 (Saturation en Oxygène)', na(d.sao2, '%')) +
+    sumRow('PAS', na(d.pas, 'mmHg')) + sumRow('Interprétation PAS', it(I.pasI)) + sumRow('PAD', na(d.pad, 'mmHg')) +
+    sumRow('PAM', (I.pam !== undefined ? fmtC(I.pam) : 'N/A') + ' mmHg') + sumRow('Interprétation PAM', it(I.pamI)) +
+    sumRow('FC (Fréquence cardiaque)', na(d.fc, 'bpm')) + sumRow('Interprétation FC', it(I.fcI));
+  var right = '';
+  SIGN_BOXES.forEach(function(b){ right += sumRow(b.sum, sel(d[b.k])); });
+  right += sumRow('Enceinte avec l’un des suivants', 'N/A') +
+    '<p class="sum-row">' + ue('Examens complémentaires') + ':<br>' + ue('Test de grossesse') + c + ' ' + esc(gross ? U(gross) : '') + ' | ' + ue('Âge gestationnel') + ': <b>' + ga + '</b> | ' + ue("Date probable d'accouchement") + ': <b>' + dpa + '</b> | ' + ue('Taux de glycémie') + c + ' <b>' + na(d.glycemie) + '</b> | ' + ue("Taux d'hémoglobine") + c + ' <b>' + na(d.hb) + '</b> | ' + ue('TDR') + c + ' ' + esc(d.tdr ? U(d.tdr) : '') + '</p>';
+  return '<div class="sum"><div class="sum-t">' + ue('Résumé') + c + ' <span class="c-' + P.cls + '">' + ue(P.etat) + '</span></div><div class="sum-bar bg-' + P.cls + '"></div>' +
+    '<div class="sum-cols"><div class="sum-l">' + left + '</div><div class="sum-r">' + right + '</div></div>' +
+    '<div class="sum-act c-' + P.cls + '">' + ue(P.action) + '</div></div>';
+}
+function parseDMY(s){
+  var m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(s || '').trim()); if (!m) return null;
+  var d = new Date(+m[3], +m[2] - 1, +m[1]); if (d.getDate() !== +m[1] || d.getMonth() !== +m[2] - 1) return null; return d;
+}
+function mountStep(){
+  var d = S.d;
+  if (S.step === 1){
+    var pitems = PATIENTS.slice().sort(function(a, b){ return b.reg - a.reg; }).map(function(p){ return {v:p.id, t:p.id + ' - ' + p.name}; });
+    new S2($('#selPatient'), {items:pitems, value:d.patient, minChars:3, allowClear:false, placeholder:U('Rechercher le patient...'), hintShort:esc(t('hintShort')), hintNone:esc(t('hintNone')) + ' <button class="linkbtn" data-act="newpatient">' + esc(t('createLink')) + '</button>', onChange:function(v){ S.d.patient = v; $('#wzBody').innerHTML = stepHTML(); mountStep(); }});
+    var b = $('#selPatient .s2'); if (b) b.id = 'selPatientBox';
+  } else if (S.step === 2){
+    new S2($('#selMotif'), {multiple:true, items:MOTIFS.map(function(m){ return {v:m[0], t:motifTxt(m[0]), k:m[1] + ' ' + m[2] + ' ' + m[3] + ' ' + m[4]}; }), value:d.motifs, onChange:function(v){ S.d.motifs = v; }});
+    SIGN_BOXES.forEach(function(bx){ new S2($('#sel_' + bx.k), {multiple:true, items:items(bx.items.map(function(i){ return i[0]; })), value:d[bx.k], onChange:function(v){ S.d[bx.k] = v; }}); });
+    new S2($('#selCyan'), {items:items(['Non','Oui']), value:d.cyanose, allowClear:false, placeholder:U('Sélectionner...'), onChange:function(v){ S.d.cyanose = v; }});
+  } else if (S.step === 3){
+    new S2($('#selGE'), {items:items(GCS.e), value:d.gcsE, placeholderOption:true, onChange:function(v){ S.d.gcsE = v; }});
+    new S2($('#selGV'), {items:items(GCS.v), value:d.gcsV, placeholderOption:true, onChange:function(v){ S.d.gcsV = v; }});
+    new S2($('#selGM'), {items:items(GCS.m), value:d.gcsM, placeholderOption:true, onChange:function(v){ S.d.gcsM = v; }});
+    updateCalc();
+  } else if (S.step === 4){
+    new S2($('#selGross'), {items:items(['(Pas fait)','Non applicable','Négatif','Positif']), value:d.grossesse, placeholderOption:true, onChange:function(v){ S.d.grossesse = v; }});
+    new S2($('#selTdr'), {items:items(['(Pas fait)','Négatif','Positif']), value:d.tdr, placeholderOption:true, onChange:function(v){ S.d.tdr = v; }});
+    URINE.forEach(function(u, i){ new S2($('#selU' + i), {items:items(u[1]), value:(d.urine[u[0]] || null), placeholderOption:true, onChange:function(v){ if (v === null) delete S.d.urine[u[0]]; else S.d.urine[u[0]] = v; }}); });
+  }
+}
+function setBadge(k, txt){
+  var b = $('[data-b="' + k + '"]'); if (!b) return;
+  if (!txt){ b.hidden = true; return; }
+  b.hidden = false; b.textContent = txt;
+  b.className = 'badge ' + (/NORMAL/.test(txt) ? 'bl-success' : 'bl-danger');
+}
+function updateCalc(){
+  var I = interp(S.d);
+  var put = function(k, v){ var el = $('[data-c="' + k + '"]'); if (el) el.value = (v === undefined ? '' : fmtC(v)); };
+  var B = function(pre, v){ return v ? (pre ? U(pre) + ' ' : '') + U(v) : ''; };
+  put('imc', I.imc); put('pideal', I.pideal); put('sc', I.sc); put('pam', I.pam);
+  setBadge('imc', B('IMC', I.imcI)); setBadge('temp', B('', I.tempI)); setBadge('pas', B('PAS', I.pasI));
+  setBadge('pam', B('PAM', I.pamI)); setBadge('fc', B('FC', I.fcI));
+}
+
+function filteredTriages(){
+  var f = S.filter, q = norm(f.q);
+  var from = f.from ? new Date(f.from + 'T00:00:00') : null, to = f.to ? new Date(f.to + 'T23:59:59') : null;
+  return S.triages.filter(function(r){
+    if (from && r.date < from) return false;
+    if (to && r.date > to) return false;
+    if (f.pending && r.status !== 'pending') return false;
+    if (q){ var p = pById(r.patient); if (norm(r.code + ' ' + r.patient + ' ' + (p ? p.name : '')).indexOf(q) < 0) return false; }
+    return true;
+  }).sort(function(a, b){ return b.date - a.date; });
+}
+function rowsHTML(){
+  var rows = filteredTriages(), n = S.filter.n, shown = rows.slice(0, n), first = rows.length ? 1 : 0;
+  var body = shown.map(function(r){
+    var p = pById(r.patient), P = PRIO[r.priority];
+    var sub = r.status === 'pending' ? '<div class="started">' + IC.userSm + '<span>' + ue('Démarré par') + ' ' + esc(r.startedBy) + '</span></div>' :
+      '<button class="hist" data-act="hist" data-code="' + r.code + '">' + IC.clock + ' ' + ue('Historique de traitement') + ' ' + IC.chevD + '</button><div class="hist-box" id="hb_' + r.code + '" hidden>' + ue('Aucun traitement enregistré.') + '</div>';
+    var opt = r.status === 'pending' ?
+      '<div class="opt"><button class="btn btn-sm btn-warning" data-act="resume" data-code="' + r.code + '">' + IC.edit + ' ' + ue('Reprendre le triage') + '</button><button class="btn btn-sm btn-info" data-act="consult">' + IC.list + ' ' + ue('Consultation') + '</button></div>' :
+      '<div class="opt"><button class="btn btn-sm btn-primary" data-act="detail" data-code="' + r.code + '">' + IC.list + ' ' + ue('Résumé') + '</button><button class="btn btn-sm btn-info" data-act="consult">' + IC.list + ' ' + ue('Consultation') + '</button></div>';
+    return '<tr><td>' + r.code + '</td><td>' + r.patient + '</td><td>' + esc(p ? p.name : '') + '</td><td>' + dmyhms(r.date) + '<br>' + sub + '</td>' +
+      '<td class="pr-cell"><span class="badge bl-' + P.cls + '">' + ue(P.badge) + '</span>' + (r.status === 'pending' ? '<span class="badge bl-warning">' + ue('EN ATTENTE') + '</span>' : '') + '</td><td>' + opt + '</td></tr>';
+  }).join('');
+  if (!rows.length) body = '<tr><td colspan="6" style="text-align:center;color:var(--body)">' + ue('Aucune donnée disponible') + '</td></tr>';
+  return {body:body, foot:S.lang === 'en' ? 'Showing ' + first + ' to ' + shown.length + ' of ' + rows.length + ' entries' : 'Affichage de ' + first + ' à ' + shown.length + ' sur ' + rows.length + ' entrées'};
+}
+function viewList(){
+  var f = S.filter, r = rowsHTML();
+  var alert = S.lang === 'en' ?
+    '<div><b>Triage history:</b> See here the list of triaged patients. Use the date filters to refine the search. <b>Priority legend:</b> <span class="badge bl-danger">CRITICAL</span> (immediate emergency), <span class="badge bl-warning">SEVERE</span> (to be monitored), <span class="badge bl-success">MODERATE</span> (stable).</div>' :
+    '<div><b>Historique du Triage :</b> Consultez ici la liste des patients triés. Utilisez les filtres de date pour affiner la recherche. <b>Légende des priorités :</b> <span class="badge bl-danger">CRITIQUE</span> (Urgence immédiate), <span class="badge bl-warning">SÉVÈRE</span> (À surveiller), <span class="badge bl-success">MODÉRÉ</span> (Stable).</div>';
+  return '<div class="pg-head">' + bcHTML(U('Liste des triages')) + '<span class="sp"></span>' + helpBtn() + '</div>' +
+    '<div class="alert-info">' + IC.info + alert + '</div>' +
+    '<div class="card"><div class="flt">' +
+      '<div><label class="lbl" for="fFrom">' + ue('DATE DE DÉBUT') + '</label><input class="inp" type="date" id="fFrom" value="' + f.from + '"></div>' +
+      '<div><label class="lbl" for="fTo">' + ue('DATE DE FIN') + '</label><input class="inp" type="date" id="fTo" value="' + f.to + '"></div>' +
+      '<label class="sw"><input type="checkbox" id="fPend"' + (f.pending ? ' checked' : '') + '><span class="sw-ui"></span>' + ue('En attente uniquement') + '</label>' +
+      '<button class="btn btn-primary" data-act="filter">' + IC.filter + ' ' + ue('Filtrer') + '</button><button class="btn btn-outline" data-act="freset">' + IC.reset + ' ' + ue('Réinit.') + '</button></div></div>' +
+    '<div class="card"><div class="tbl-top"><select class="inp sm" id="fN" aria-label="' + ue('Lignes') + '">' + [10, 25, 50].map(function(n){ return '<option' + (n === f.n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select><span class="sp"></span>' +
+      '<label>' + ue('Rechercher') + ' <input class="inp inp-q" id="fQ" placeholder="' + ue('Rechercher..') + '" value="' + esc(f.q) + '"></label>' +
+      '<button class="btn btn-lab" data-act="na">' + IC.export + ' ' + ue('Exporter') + ' ' + IC.chevD + '</button><button class="btn btn-success" data-act="new">' + IC.plus + ' ' + ue('Nouveau') + '</button></div>' +
+    '<div class="tbl-wrap"><table class="tbl tbl-list tbl-tri"><thead><tr><th>' + ue('CODE TRIAGE') + '</th><th>' + ue('CODE PATIENT') + '</th><th>' + ue('NOM PATIENT') + '</th><th>' + ue('DATE') + '</th><th>' + ue('PRIORITÉ') + '</th><th>' + ue('OPTION') + '</th></tr></thead><tbody id="tBody">' + r.body + '</tbody></table></div>' +
+    '<div class="tbl-foot" id="tFoot">' + r.foot + '</div></div>';
+}
+function refreshTable(){ var r = rowsHTML(); var b = $('#tBody'); if (b){ b.innerHTML = r.body; $('#tFoot').textContent = r.foot; } }
+function viewDetail(){
+  var r = null; for (var i = 0; i < S.triages.length; i++) if (S.triages[i].code === S.detailCode) r = S.triages[i];
+  if (!r) return '<p>—</p>';
+  var p = pById(r.patient);
+  return '<div class="pg-head">' + bcHTML('Triage details ' + r.code) + '<span class="sp"></span><button class="btn btn-outline" data-nav="triage-list">' + IC.back + ' ' + ue('Liste des triages') + '</button></div>' +
+    '<div class="card"><div class="wz-body"><div class="st-head"><h6>' + esc(p ? p.name : '') + ' · ' + r.patient + '</h6><small>' + dmyhms(r.date) + '</small></div>' + summaryHTML(r.d) + '</div></div>';
+}
+function viewStats(){
+  var c = {CRITIQUE:0, SEVERE:0, MODERE:0}, pend = 0;
+  S.triages.forEach(function(r){ c[r.priority]++; if (r.status === 'pending') pend++; });
+  var tile = function(name, n, cls){ return '<div class="card stat"><span class="badge bl-' + cls + '">' + ue(name) + '</span><b>' + n + '</b></div>'; };
+  return '<div class="pg-head">' + bcHTML(U('Statistiques')) + '</div>' +
+    '<div class="stat-grid">' + tile('CRITIQUE', c.CRITIQUE, 'danger') + tile('SÉVÈRE', c.SEVERE, 'warning') + tile('MODÉRÉ', c.MODERE, 'success') + tile('EN ATTENTE', pend, 'warning') + '</div>' +
+    '<p class="small">' + (S.lang === 'en' ? 'Practice data only (fictitious triages in this browser).' : "Données de l'exercice seulement (triages fictifs de ce navigateur).") + '</p>';
+}
+
+/* ---------- enregistrement d'un patient d'exercice (écran simplifié : l'écran réel n'a pas été photographié) ---------- */
+function newReg(){ return {nom:'', prenom:'', sexe:null, dob:'', tel:'', err:'', done:null}; }
+function fldReg(label, inner, req){ return '<div class="fld"><label class="lbl">' + ue(label) + (req ? ' *' : '') + '</label>' + inner + '</div>'; }
+function viewReg(){
+  var r = S.reg || (S.reg = newReg()), created = PATIENTS.filter(function(p){ return p.created; });
+  var h = '<div class="pg-head"><h4 class="bc"><span class="muted">' + ue('Accueil') + ' /</span> ' + ue('Enregistrement') + '</h4></div>' +
+    '<div class="train-note wide"><span class="tb-tag">' + (S.lang === 'en' ? 'PRACTICE' : 'EXERCICE') + '</span><span>' + esc(t('regNote')) + '</span></div>';
+  if (r.done){
+    var p = pById(r.done);
+    h += '<div class="reg-ok"><b>' + esc(t('regSaved')) + ' ' + esc(p.id + ' - ' + p.name) + '</b><span class="sp"></span><button class="btn btn-primary" data-act="regtriage" data-code="' + p.id + '">' + ue('Commencer le triage') + '</button><button class="btn btn-outline" data-act="regnew">' + ue('Enregistrer un autre patient') + '</button></div>';
+  } else {
+    h += '<div class="card"><div class="wz-body"><div class="st-head"><h6>' + ue('Nouveau patient') + '</h6><small>' + esc(t('regReq')) + '</small></div><div class="grid3 al">' +
+      fldReg('NOM', '<input class="inp" id="r_nom" data-r="nom" autocomplete="off" value="' + esc(r.nom) + '">', true) +
+      fldReg('PRÉNOM', '<input class="inp" id="r_prenom" data-r="prenom" autocomplete="off" value="' + esc(r.prenom) + '">') +
+      fldReg('SEXE', '<div id="selSexe"></div>', true) +
+      fldReg('DATE DE NAISSANCE', '<input class="inp" id="r_dob" data-r="dob" placeholder="' + ue('JJ/MM/AAAA') + '" autocomplete="off" value="' + esc(r.dob) + '">', true) +
+      fldReg('TÉLÉPHONE', '<input class="inp" id="r_tel" data-r="tel" inputmode="tel" autocomplete="off" value="' + esc(r.tel) + '">') +
+      '</div>' + (r.err ? '<div class="reg-err" role="alert">' + esc(r.err) + '</div>' : '') +
+      '<div class="st-nav"><button class="btn btn-outline" data-act="regclear">' + ue('Annuler') + '</button><span class="sp"></span><button class="btn btn-primary" data-act="regsave">' + ue('Enregistrer') + '</button></div></div></div>';
+  }
+  if (created.length) h += '<div class="card"><div class="tbl-top"><b>' + ue('Patients enregistrés') + '</b></div><div class="tbl-wrap"><table class="tbl tbl-list tbl-reg"><thead><tr><th>' + ue('CODE PATIENT') + '</th><th>' + ue('NOM PATIENT') + '</th><th>' + ue('SEXE') + '</th><th>' + ue('DATE DE NAISSANCE') + '</th><th></th></tr></thead><tbody>' +
+    created.slice().reverse().map(function(q){ return '<tr><td>' + q.id + '</td><td>' + esc(q.name) + '</td><td>' + ue(q.sex === 'F' ? 'Féminin' : 'Masculin') + '</td><td>' + dmyISO(q.dob) + '</td><td><button class="btn btn-sm btn-primary" data-act="regtriage" data-code="' + q.id + '">' + ue('Commencer le triage') + '</button></td></tr>'; }).join('') +
+    '</tbody></table></div></div>';
+  return h;
+}
+function mountReg(){
+  if (!$('#selSexe')) return;
+  new S2($('#selSexe'), {items:items(['Féminin','Masculin']), value:S.reg.sexe, allowClear:false, placeholder:U('Sélectionner...'), onChange:function(v){ S.reg.sexe = v; }});
+}
+function saveReg(){
+  var r = S.reg || (S.reg = newReg()), nom = String(r.nom || '').trim(), dob = parseDMY(r.dob);
+  r.err = '';
+  if (!nom) r.err = t('regErrName');
+  else if (!r.sexe) r.err = t('regErrSex');
+  else if (!dob || dob > TODAY || TODAY.getFullYear() - dob.getFullYear() > 120) r.err = t('regErrDob');
+  if (r.err){ render(); var f = $(r.err === t('regErrName') ? '#r_nom' : (r.err === t('regErrDob') ? '#r_dob' : '#selSexe .s2')); if (f) f.focus(); return; }
+  var maxReg = 0; PATIENTS.forEach(function(q){ if (q.reg > maxReg) maxReg = q.reg; });
+  S.regN = (S.regN || 0) + 1;
+  var id = 'P26-EX' + pad2(S.regN);
+  PATIENTS.push({id:id, name:(nom + ' ' + String(r.prenom || '').trim()).trim().toUpperCase(), sex:(r.sexe === 'Féminin' ? 'F' : 'M'), dob:ymd(dob), reg:maxReg + 1, created:true});
+  S.reg = newReg(); S.reg.done = id;
+  render(); toast(t('regSaved') + ' ' + id, 't-train');
+}
+
+/* ---------- fiche du cas ---------- */
+/* tâches de la fiche qui correspondent à l'écran en cours (surlignées ; sur téléphone, reprises dans la barre du bas) */
+function curTasks(){
+  if (S.mode !== 'case') return [];
+  if (S.caseId === 'T04'){
+    if (S.view === 'triage-list') return [0, 1];
+    return S.view === 'triage-new' ? (S.step === 5 ? [3] : [2]) : [];
+  }
+  return S.view === 'triage-new' ? ({1:[0], 2:[1, 2], 3:[3], 4:[4], 5:[5]}[S.step] || []) : [];
+}
+function whereTxt(){
+  if (S.view === 'triage-new') return t('stepWord') + ' ' + S.step + '/5';
+  if (S.view === 'triage-list') return U('Liste des triages');
+  if (S.view === 'accueil-enr') return U('Enregistrement');
+  if (S.view === 'triage-stats') return U('Statistiques');
+  return U('Résumé');
+}
+function barHTML(){
+  var title, task, cur = curTasks();
+  if (S.mode === 'case'){
+    var C = CASES[S.caseId], tl = L(C.tasks);
+    title = C.code + ' · ' + L(C.title);
+    task = cur.length ? cur.map(function(i){ return tl[i]; }).join(' ') : t('cpBarIdle');
+  } else {
+    title = t('tbFree');
+    task = S.view === 'triage-new' ? ((S.step === 1 && !S.d.patient) ? t('stepHint') : U(STEPS[S.step - 1][0])) : t('cpBarIdle');
+  }
+  return '<button class="cp-bar" data-cp="open" aria-expanded="false"><span class="cp-bar-top"><b>' + esc(title) + '</b><span class="cp-bar-more">' + esc(t('cpOpen')) + IC.chevU + '</span></span>' +
+    '<span class="cp-bar-task"><b>' + esc(whereTxt()) + (S.lang === 'en' ? ': ' : ' : ') + '</b>' + esc(task) + '</span></button>';
+}
+function cpToMeasures(){ var b = $('#casePanel .cp-body'), m = b && b.querySelector('.cp-h'); if (m) b.scrollTop += m.getBoundingClientRect().top - b.getBoundingClientRect().top - 6; }
+/* hauteur de la fiche en bas de l'écran (téléphone) : la page garde cette place libre en dessous */
+function setCpb(){
+  if (document.body.classList.contains('kb')) return;
+  var P = $('#casePanel'), h = (S.loggedIn && isPhone() && P) ? P.offsetHeight : 0;
+  document.documentElement.style.setProperty('--cpb', h + 'px');
+}
+function renderCasePanel(){
+  var P = $('#casePanel');
+  document.body.classList.toggle('case-open', !!(S.caseOpen && S.loggedIn));
+  document.body.classList.toggle('has-case', !!S.loggedIn);
+  if (!S.loggedIn){ P.innerHTML = ''; setCpb(); return; }
+  var cur = curTasks();
+  var h = barHTML() + '<div class="cp-head"><span class="tb-tag">' + (S.lang === 'en' ? 'PRACTICE' : 'EXERCICE') + '</span><b>' + esc(t('cpTitle')) + '</b><button class="cp-x" data-cp="close" aria-label="' + esc(isPhone() ? t('cpCollapse') : t('close')) + '"><span class="cp-x-ic">' + IC.x + '</span><span class="cp-x-txt">' + esc(t('cpCollapse')) + IC.chevD + '</span></button></div><div class="cp-body">';
+  if (S.mode === 'case'){
+    var C = CASES[S.caseId], p = pById(C.patient);
+    h += '<h3 class="cp-title">' + C.code + ' · ' + esc(L(C.title)) + '</h3>' +
+      '<div class="cp-pat">' + esc(p.name) + ' (' + p.id + ') · ' + (p.sex === 'F' ? t('woman') : t('man')) + ', ' + ageOf(p.dob) + ' ' + t('years') + ' · ' + bornTxt(p) + ' ' + dmyISO(p.dob) + '</div>' +
+      '<p class="cp-story">' + esc(L(C.story)) + '</p>' +
+      '<div class="cp-h">' + esc(C.paper ? t('cpPaper') : t('cpMeasures')) + '</div>' +
+      '<div class="' + (C.paper ? 'cp-paper' : '') + '"><table class="cp-tbl">' + C.measures.map(function(m){ return '<tr><th>' + esc(L(m[0])) + '</th><td>' + esc(fill(L(m[1]))) + '</td></tr>'; }).join('') + '</table></div>' +
+      '<div class="cp-h">' + esc(t('cpTasks')) + '</div><ol class="cp-tasks">' + L(C.tasks).map(function(x, i){ return '<li' + (cur.indexOf(i) >= 0 ? ' class="cur"' : '') + '>' + esc(x) + '</li>'; }).join('') + '</ol>' +
+      '<div class="cp-btns"><button class="tbtn" data-cp="hint">' + esc(t('cpHint')) + '</button><button class="tbtn" data-cp="restart">' + esc(t('cpRestart')) + '</button></div>';
+  } else {
+    h += '<h3 class="cp-title">' + esc(t('tbFree')) + '</h3><p class="cp-story">' + esc(t('cpFreeText')) + '</p><div class="cp-btns"><button class="tbtn" data-cp="hint">' + esc(t('cpHint')) + '</button></div>';
+  }
+  P.innerHTML = h + '</div>';
+  setCpb();
+}
+
+/* ---------- écrans : départ, aide, correction, guide ---------- */
+function showStart(msg){
+  S.loggedIn = false; renderCasePanel(); renderTrainbar();
+  var sc = $('#startScreen');
+  var cases = CASE_ORDER.map(function(id){ var C = CASES[id]; return '<button class="case-btn" data-start="' + id + '"><b>' + C.code + ' · ' + esc(L(C.title)) + '</b><span>' + esc(L(C.short)) + '</span></button>'; }).join('');
+  sc.innerHTML = '<div class="panel narrow"><div class="panel-h"><span class="tb-tag">' + (S.lang === 'en' ? 'PRACTICE' : 'EXERCICE') + '</span><h2>' + esc(t('startTitle')) + '</h2></div><div class="panel-b">' +
+    (msg ? '<div class="msg-box">' + esc(msg) + '</div>' : '') +
+    '<p>' + esc(t('startLead')) + '</p>' +
+    '<div class="train-note ph-only">' + esc(t('phoneNote')) + '</div>' +
+    '<label class="start-name"><span>' + esc(t('nameLabel')) + '</span><input class="inp" id="learnerName" autocomplete="off" value="' + esc(S.learner) + '"></label>' +
+    '<h3>' + esc(t('choose')) + '</h3><div class="start-grid">' + cases + '<button class="case-btn free" data-start="free"><b>' + esc(t('tbFree')) + '</b><span>' + esc(t('freeDesc')) + '</span></button></div>' +
+    '<div class="start-foot"><button class="tbtn" data-tb="guide">' + esc(t('tbGuide')) + '</button></div>' +
+    '<p class="small" style="margin-top:12px">' + esc(t('startNote')) + '</p></div></div>';
+  sc.hidden = false;
+}
+function hideStart(){ $('#startScreen').hidden = true; }
+function startCase(cid){
+  readName(); $('#toasts').innerHTML = '';
+  S.loggedIn = true; S.caseOpen = true; S.editing = null; S.d = newData(); S.step = 1; S.lastResult = null;
+  if (cid === 'free'){ S.mode = 'free'; S.caseId = null; }
+  else { S.mode = 'case'; S.caseId = cid; if (cid === 'T04') seedT04(); }
+  S.caseStart = Date.now();
+  hideStart(); renderNavbar();
+  go(S.mode === 'case' ? CASES[cid].start : 'triage-new');
+}
+function readName(){ var n = $('#learnerName'); if (n){ S.learner = n.value.trim(); store.set('learner', S.learner); } }
+function openModal(html, wide){
+  var m = $('#modalScreen');
+  m.innerHTML = '<div class="panel' + (wide ? '' : ' narrow') + '" role="dialog" aria-modal="true">' + html + '</div>';
+  m.hidden = false;
+  var f = m.querySelector('button'); if (f) f.focus();
+}
+function closeModal(){ $('#modalScreen').hidden = true; $('#modalScreen').innerHTML = ''; }
+function modalHead(title){ return '<div class="panel-h"><span class="tb-tag">' + (S.lang === 'en' ? 'PRACTICE' : 'EXERCICE') + '</span><h2>' + esc(title) + '</h2><button class="tbtn" data-m="close">' + esc(t('close')) + '</button></div>'; }
+function showHint(){
+  var key = (S.view === 'triage-list') ? 'list' : String(S.step);
+  var txt = null;
+  if (S.mode === 'case' && CASES[S.caseId].hints[key]) txt = L(CASES[S.caseId].hints[key]);
+  if (!txt) txt = L(GENERIC_HINTS[key] || GENERIC_HINTS[1]);
+  var where = key === 'list' ? U('Liste des triages') : ((S.lang === 'en' ? 'Step ' : 'Étape ') + key);
+  openModal(modalHead(t('hint') + ' · ' + where) + '<div class="panel-b"><p>' + esc(txt) + '</p></div>');
+}
+
+/* ---------- enregistrement ---------- */
+function saveTriage(status){
+  var pr = computePriority(S.d).level, rec = null;
+  if (S.editing){ for (var i = 0; i < S.triages.length; i++) if (S.triages[i].code === S.editing) rec = S.triages[i]; }
+  if (rec){ rec.d = clone(S.d); rec.status = status; rec.priority = pr; rec.patient = S.d.patient; rec.startedBy = rec.startedBy || accountName(); }
+  else { rec = {code:rid(), patient:S.d.patient, date:new Date(), status:status, priority:pr, startedBy:accountName().toUpperCase(), hist:false, d:clone(S.d)}; S.triages.push(rec); }
+  return rec;
+}
+function finish(status){
+  if (!S.d.patient){ toast(t('choosePatient'), 't-train'); S.step = 1; render(); return; }
+  var rec = saveTriage(status);
+  toast(status === 'submitted' ? U('Triage enregistré avec succès.') : U('Triage mis en attente.'), status === 'submitted' ? '' : 't-info');
+  S.editing = null; S.d = newData(); S.step = 1;
+  go('triage-list');
+  if (S.mode === 'case') showResult(S.caseId, rec.code); else showFreeResult(rec.code);
+}
+function resume(code){
+  var rec = null; for (var i = 0; i < S.triages.length; i++) if (S.triages[i].code === code) rec = S.triages[i];
+  if (!rec) return;
+  S.editing = code; S.d = clone(rec.d); S.step = 1; go('triage-new');
+  toast(U('Reprise du triage') + ' ' + code + '.', 't-info');
+}
+function seedT04(){
+  S.triages = S.triages.filter(function(r){ return r.code !== S.t04code; });
+  var d = newData();
+  d.patient = 'P26-TEST04'; d.cyanose = 'Non'; d.evda = ['E']; d.gcsE = GCS.e[0]; d.gcsV = GCS.v[0]; d.gcsM = GCS.m[0];
+  d.temp = '98'; d.fc = '88'; d.fr = '18'; d.pas = '124'; d.pad = '78'; d.sao2 = '98'; d.poids = '0'; d.taille = '176';
+  d.tdr = '(Pas fait)'; d.grossesse = 'Non applicable';
+  var dt = new Date(TODAY.getTime()); dt.setHours(7, 50, 12, 0); if (dt > new Date()) dt = addDays(dt, -1);
+  S.t04code = rid();
+  S.triages.push({code:S.t04code, patient:'P26-TEST04', date:dt, status:'pending', priority:computePriority(d).level, startedBy:'IDE TEST', hist:false, d:d});
+}
+function seed(){
+  var mk = function(pid, daysAgo, hh, mm, ss, fillFn){
+    var d = newData(); d.patient = pid; d.cyanose = 'Non'; d.evda = ['E']; d.gcsE = GCS.e[0]; d.gcsV = GCS.v[0]; d.gcsM = GCS.m[0];
+    fillFn(d);
+    var dt = addDays(TODAY, -daysAgo); dt.setHours(hh, mm, ss, 0);
+    S.triages.push({code:rid(), patient:pid, date:dt, status:'submitted', priority:computePriority(d).level, startedBy:'', hist:true, d:d});
+  };
+  mk('P26-TEST08', 5, 17, 52, 50, function(d){ d.motifs = ['MD30.Z']; d.trauma = ['Douleur thoracique aiguë (>50 ans)']; d.temp = '36.8'; d.fc = '96'; d.fr = '20'; d.pas = '152'; d.pad = '90'; d.sao2 = '96'; d.taille = '168'; d.poids = '74'; d.glycemie = '1.32'; d.tdr = '(Pas fait)'; d.grossesse = 'Non applicable'; });
+  mk('P26-TEST07', 3, 14, 44, 19, function(d){ d.motifs = ['MD90.1']; d.temp = '37.1'; d.fc = '84'; d.fr = '18'; d.pas = '116'; d.pad = '72'; d.sao2 = '99'; d.tdr = 'Négatif'; d.grossesse = 'Négatif'; });
+  mk('P26-TEST06', 2, 9, 54, 24, function(d){ d.motifs = ['MG27']; d.trauma = ['Luxation suspectée']; d.neuro = ['Douleur sévère (pas de critères rouge)']; d.temp = '36.6'; d.fc = '92'; d.fr = '18'; d.pas = '124'; d.pad = '76'; d.sao2 = '99'; d.grossesse = 'Non applicable'; });
+  mk('P26-TEST05', 1, 8, 35, 44, function(d){ d.motifs = ['MG22']; d.temp = '36.9'; d.fc = '78'; d.fr = '16'; d.pas = '132'; d.pad = '84'; d.sao2 = '98'; d.glycemie = '0.98'; d.grossesse = 'Non applicable'; });
+  seedT04();
+}
+
+/* ---------- correction ---------- */
+function vtxt(v){ var s = String(v == null ? '' : v).trim(); return s === '' ? t('empty') : s; }
+function fnum(n){ return S.lang === 'fr' ? String(n).replace('.', ',') : String(n); }
+function evaluate(cid, rec){
+  var C = CASES[cid], X = C.expect, d = rec.d, out = [];
+  var add = function(ok, fr, en, dfr, den){ out.push({ok:ok, fr:fr, en:en, dfr:dfr || '', den:den || ''}); };
+  var mf = function(a){ return a.map(function(c){ return motifTxt(c, 'fr'); }).join(' ; '); };
+  var me = function(a){ return a.map(function(c){ return motifTxt(c, 'en'); }).join('; '); };
+  var ej = function(a, sep){ return a.map(function(x){ return EN(x); }).join(sep); };
+  var vf = function(v){ var s = String(v == null ? '' : v).trim(); return s === '' ? TXT.fr.empty : s; };
+  var ve = function(v){ var s = String(v == null ? '' : v).trim(); return s === '' ? TXT.en.empty : s; };
+  /* patient */
+  var p = pById(d.patient), pe = pById(X.patient);
+  if (d.patient === X.patient) add(true, 'Bon patient : ' + pe.name + ', ' + (pe.sex === 'F' ? 'née le ' : 'né le ') + dmyISO(pe.dob), 'Right patient: ' + pe.name + ', born ' + dmyISO(pe.dob));
+  else if (p && p.name === pe.name) add(false, 'Mauvais patient (même nom)', 'Wrong patient (same name)', p.id + ' est né le ' + dmyISO(p.dob) + '. Le patient du cas est né le ' + dmyISO(pe.dob) + ' : vérifiez toujours la date de naissance dans Détails.', p.id + ' was born on ' + dmyISO(p.dob) + '. The case patient was born on ' + dmyISO(pe.dob) + ': always check the date of birth in Details.');
+  else add(false, 'Mauvais patient', 'Wrong patient', p ? p.id + ' - ' + p.name : '', p ? p.id + ' - ' + p.name : '');
+  /* reprise (TEST 04) */
+  if (X.resume){
+    if (rec.code === S.t04code) add(true, 'Triage en attente repris (pas de doublon)', 'Pending triage resumed (no duplicate)');
+    else add(false, 'Nouveau triage créé au lieu de reprendre', 'New triage created instead of resuming', 'Le triage en attente reste dans la liste : il y a maintenant deux triages pour le même patient. Utilisez « Reprendre le triage ».', 'The pending triage is still in the list: there are now two triages for the same patient. Use “Resume triage”.');
+  }
+  /* motifs */
+  var miss = X.motifs.filter(function(c){ return d.motifs.indexOf(c) < 0; });
+  var extra = d.motifs.filter(function(c){ return X.motifs.indexOf(c) < 0 && X.motifsOpt.indexOf(c) < 0; });
+  if (!d.motifs.length) add(false, 'Aucun motif choisi', 'No complaint chosen', 'Sans motif, le dossier ne dit pas pourquoi le patient est venu. Attendu : ' + mf(X.motifs), 'Without a complaint, the record does not say why the patient came. Expected: ' + me(X.motifs));
+  else if (!miss.length && !extra.length) add(true, 'Motif(s) : ' + mf(d.motifs), 'Complaint(s): ' + me(d.motifs));
+  else add(false, 'Motif(s) à revoir', 'Complaint(s) to review',
+    [miss.length ? 'Manquant : ' + mf(miss) : '', extra.length ? 'En trop : ' + mf(extra) : ''].filter(Boolean).join(' — '),
+    [miss.length ? 'Missing: ' + me(miss) : '', extra.length ? 'Not needed: ' + me(extra) : ''].filter(Boolean).join(' — '));
+  /* signes */
+  var sel = allSigns(d), age = ageOf(pe.dob), eqUsed = [];
+  var has = function(sg){ return sel.some(function(x){ return x.text === sg; }); };
+  var missS = X.signs.filter(function(sg){
+    if (has(sg)) return false;
+    for (var k in CHILD_EQ) if (CHILD_EQ[k] === sg && has(k)){ eqUsed.push(k); return false; }
+    return true;
+  });
+  var extraS = sel.filter(function(x){ return X.signs.indexOf(x.text) < 0 && X.signsOpt.indexOf(x.text) < 0 && eqUsed.indexOf(x.text) < 0; });
+  var eqFr = eqUsed.map(function(k){ return 'Accepté : « ' + k + ' » est le libellé enfant ; pour un adulte, choisissez « ' + CHILD_EQ[k] + ' ».'; }).join(' ');
+  var eqEn = eqUsed.map(function(k){ return 'Accepted: “' + EN(k) + '” is the child label; for an adult, choose “' + EN(CHILD_EQ[k]) + '”.'; }).join(' ');
+  var selTxt = sel.map(function(x){ return x.text; });
+  if (!missS.length && !extraS.length){
+    if (selTxt.length) add(true, 'Signes : ' + selTxt.join(' ; '), 'Signs: ' + ej(selTxt, '; '), eqFr, eqEn);
+    else add(true, 'Aucun signe choisi (juste : pas de signe rouge ou jaune)', 'No sign selected (right: no red or yellow sign)');
+  } else {
+    var dfr = [], den = [];
+    if (missS.length){ dfr.push('Manquant : ' + missS.join(' ; ') + '.'); den.push('Missing: ' + ej(missS, '; ') + '.'); }
+    extraS.forEach(function(x){
+      var nt = signNote(x.text, cid), ch = SIGN_INFO[x.text] && SIGN_INFO[x.text].child && age >= 12;
+      dfr.push('En trop : « ' + x.text + ' » (' + x.boxLabel + '). ' + (nt ? nt.fr : (ch ? "Item pour l'enfant (moins de 12 ans)." : 'Le cas ne décrit pas ce signe.')));
+      den.push('Not needed: “' + EN(x.text) + '” (' + EN(x.boxLabel) + '). ' + (nt ? nt.en : (ch ? 'Item for children (under 12).' : 'The case does not describe this sign.')));
+    });
+    if (eqFr){ dfr.push(eqFr); den.push(eqEn); }
+    add(false, 'Signes à revoir', 'Signs to review', dfr.join(' '), den.join(' '));
+  }
+  /* cyanose */
+  if (d.cyanose === X.cyanose) add(true, 'CYANOSE CENTRALE : ' + X.cyanose, 'CENTRAL CYANOSIS: ' + EN(X.cyanose));
+  else if (!d.cyanose) add(false, 'CYANOSE CENTRALE non renseignée', 'CENTRAL CYANOSIS not filled', 'Choisir « Non » quand elle est absente.', 'Choose “No” when it is absent.');
+  else add(false, 'CYANOSE CENTRALE : ' + d.cyanose, 'CENTRAL CYANOSIS: ' + EN(d.cyanose), 'Pas de cyanose décrite (lèvres et langue non bleues) → « Non ». « Oui » rend le patient critique.', 'No cyanosis described (lips and tongue not blue) → “No”. “Yes” makes the patient critical.');
+  /* EVDA */
+  var ev = d.evda || [];
+  if (ev.length === 1 && ev[0] === 'E') add(true, 'EVDA : Eveillé', 'AVPU: Alert');
+  else if (!ev.length) add(false, 'EVDA non renseigné', 'AVPU not filled', 'Activez l’interrupteur « Eveillé ».', 'Switch on “Alert”.');
+  else add(false, 'EVDA à revoir', 'AVPU to review', ev.length > 1 ? 'Un seul interrupteur EVDA à la fois.' : 'Le patient est éveillé : « Eveillé ».', ev.length > 1 ? 'Only one AVPU switch at a time.' : 'The patient is awake: “Alert”.');
+  /* Glasgow */
+  var gv = [d.gcsE, d.gcsV, d.gcsM];
+  if (gv[0] === GCS_OK[0] && gv[1] === GCS_OK[1] && gv[2] === GCS_OK[2]) add(true, 'Glasgow : ' + GCS_OK.join(' / ') + ' (15)', 'Glasgow: ' + ej(GCS_OK, ' / ') + ' (15)');
+  else add(false, 'Glasgow à revoir', 'Glasgow to review', 'Saisi : ' + gv.map(function(x){ return x || TXT.fr.empty; }).join(' / ') + '. Attendu : ' + GCS_OK.join(' / ') + '.', 'Entered: ' + gv.map(function(x){ return x ? EN(x) : TXT.en.empty; }).join(' / ') + '. Expected: ' + ej(GCS_OK, ' / ') + '.');
+  /* valeurs */
+  var wf = [], we = [];
+  Object.keys(X.values).forEach(function(k){
+    var target = X.values[k], n = parseNum(d[k]);
+    if (n === null || isNaN(n) || Math.abs(n - target) > 0.0001){
+      var extraFr = '', extraEn = '';
+      if (k === 'temp' && n !== null && n > 45){ extraFr = ' (' + vf(d[k]) + ' est une valeur en °F : impossible en °C)'; extraEn = ' (' + ve(d[k]) + ' is a °F value: impossible in °C)'; }
+      if (k === 'glycemie' && n !== null && n > 10){ extraFr = ' (la glycémie est en g/L)'; extraEn = ' (glucose is in g/L)'; }
+      if (k === 'sao2' && n !== null && n > 100){ extraFr = ' (plus de 100 % : impossible)'; extraEn = ' (over 100 %: impossible)'; }
+      if (n !== null && isNaN(n)){ extraFr = ' (tapez seulement le nombre, sans unité ni symbole)'; extraEn = ' (type the number only, without unit or symbol)'; }
+      wf.push(FLABEL[k] + ' : ' + vf(d[k]) + ' → ' + String(target).replace('.', ',') + extraFr);
+      we.push(FLABEL_EN[k] + ': ' + ve(d[k]) + ' → ' + target + extraEn);
+    }
+  });
+  if (!wf.length) add(true, 'Mesures saisies comme sur la fiche', 'Measurements entered as on the card');
+  else add(false, 'Mesures à revoir', 'Measurements to review', wf.join(' ; '), we.join('; '));
+  /* cases non mesurées */
+  var filled = X.empty.filter(function(k){ return String(d[k] == null ? '' : d[k]).trim() !== ''; });
+  if (!filled.length) add(true, 'Cases non mesurées laissées vides', 'Boxes not measured left empty');
+  else add(false, 'Case non mesurée remplie', 'Box not measured was filled', filled.map(function(k){ return FLABEL[k] + ' = ' + d[k]; }).join(' ; ') + '. Non mesuré : laisser vide. Un 0 tapé est enregistré comme une vraie valeur' + (filled.indexOf('poids') >= 0 ? " (et fausse l'IMC)." : '.'), filled.map(function(k){ return FLABEL_EN[k] + ' = ' + d[k]; }).join('; ') + '. Not measured: leave empty. A typed 0 is saved as a real value' + (filled.indexOf('poids') >= 0 ? ' (and makes the BMI wrong).' : '.'));
+  /* examens à choisir */
+  var exf = [], exe = [];
+  Object.keys(X.sel).forEach(function(k){
+    var ok = X.sel[k], v = d[k] === undefined ? null : d[k];
+    if (ok.indexOf(v) < 0){ var lab = k === 'tdr' ? 'TDR PALUDISME' : 'TEST DE GROSSESSE'; exf.push(lab + ' : ' + (v || TXT.fr.empty) + ' → ' + (ok[0] || TXT.fr.empty)); exe.push(EN(lab) + ': ' + (v ? EN(v) : TXT.en.empty) + ' → ' + (ok[0] ? EN(ok[0]) : TXT.en.empty)); }
+  });
+  var ddrIn = parseDMY(d.ddr);
+  if (X.ddr && !(ddrIn && dmy(ddrIn) === DDR_TXT)){ exf.push('DDR : ' + vf(d.ddr) + ' → ' + DDR_TXT + ' (JJ/MM/AAAA)'); exe.push('LMP (DDR): ' + ve(d.ddr) + ' → ' + DDR_TXT + ' (DD/MM/YYYY)'); }
+  if (Object.keys(d.urine || {}).length){ exf.push('Bandelette urinaire : non faite → laisser vide'); exe.push('Urine dipstick: not done → leave empty'); }
+  if (!exf.length) add(true, 'Examens : bien saisis', 'Tests: entered correctly');
+  else add(false, 'Examens à revoir', 'Tests to review', exf.join(' ; '), exe.join('; '));
+  /* priorité */
+  var pr = computePriority(d).level, bf = PRIO[pr].badge, bx = PRIO[X.priority].badge;
+  if (pr === X.priority) add(true, 'Priorité : ' + bf, 'Priority: ' + EN(bf));
+  else add(false, 'Priorité : ' + bf + ' (attendue : ' + bx + ')', 'Priority: ' + EN(bf) + ' (expected: ' + EN(bx) + ')', 'La priorité vient des signes choisis : voir « Pourquoi cette priorité ? ».', 'The priority comes from the selected signs: see “Why this priority?”.');
+  /* statut */
+  if (rec.status === 'submitted') add(true, 'Triage soumis (terminé)', 'Triage submitted (finished)');
+  else add(false, 'Triage laissé « en attente »', 'Triage left “on hold”', pr === 'CRITIQUE' ? 'Patient critique : ne jamais le laisser en attente. Reprendre le triage puis Soumettre.' : 'Pas terminé : Reprendre le triage puis Soumettre.', pr === 'CRITIQUE' ? 'Critical patient: never leave on hold. Resume the triage, then Submit.' : 'Not finished: resume the triage, then Submit.');
+  var score = out.filter(function(i){ return i.ok; }).length;
+  return {items:out, score:score, total:out.length, priority:pr};
+}
+function findRec(code){ for (var i = 0; i < S.triages.length; i++) if (S.triages[i].code === code) return S.triages[i]; return null; }
+function whyHTML(d){
+  var pr = computePriority(d), v = riskVitals(d), h = '<h3>' + esc(t('resWhy')) + '</h3>';
+  if (!pr.reasons.length) h += '<p>' + esc(t('resNoSign')) + '</p>';
+  else h += '<ul class="why">' + pr.reasons.map(function(r){ return '<li><span class="dot dot-' + r.c + '"></span>' + esc(r.c === 'R' ? t('red') : t('yellow')) + ' — ' + esc(L(r)) + '</li>'; }).join('') + '</ul>';
+  if (pr.g1.length && pr.g1n < 2) h += '<p class="small">' + esc(S.lang === 'en' ? 'Only one sign among Altered mental status / Hypothermia or Fever / Stiff neck / Headache: not red (two are needed). Altered mental status alone is yellow.' : 'Un seul signe parmi Altération de la conscience / Hypothermie ou Fièvre / Raideur de la nuque / Headache : pas de rouge (il en faut deux). Une altération de la conscience seule est jaune.') + '</p>';
+  if (v.length) h += '<div class="note">' + esc(t('resVitals')) + ' — ' + esc(v.map(L).join(' ; ')) + '</div>';
+  return h;
+}
+function showResult(cid, code){ S.lastResult = {cid:cid, code:code, time:Date.now() - S.caseStart}; renderResult(); }
+function mmss(ms){ var s = Math.max(0, Math.round(ms / 1000)); return Math.floor(s / 60) + ':' + pad2(s % 60); }
+function renderResult(){
+  var R = S.lastResult, C = CASES[R.cid], rec = findRec(R.code); if (!rec) return;
+  var ev = evaluate(R.cid, rec), P = PRIO[ev.priority], PX = PRIO[C.expect.priority];
+  var h = modalHead(t('resTitle') + ' · ' + C.code + ' · ' + L(C.title)) + '<div class="panel-b">' +
+    '<div class="res-top"><span class="res-score">' + ev.score + ' / ' + ev.total + ' ' + esc(t('resPoints')) + '</span>' +
+    '<span>' + esc(t('resPrio')) + (S.lang === 'en' ? ': ' : ' : ') + '<span class="badge bl-' + P.cls + '">' + ue(P.badge) + '</span> (' + esc(t('resExp')) + (S.lang === 'en' ? ': ' : ' : ') + '<span class="badge bl-' + PX.cls + '">' + ue(PX.badge) + '</span>)</span>' +
+    '<span class="small">' + esc(t('resTime')) + (S.lang === 'en' ? ': ' : ' : ') + mmss(R.time) + ' ' + esc(t('minutes')) + '</span></div>' +
+    (rec.status === 'pending' ? '<div class="note note-train">' + esc(t('resPending')) + '</div>' : '') +
+    '<ul class="res-items">' + ev.items.map(function(i){ return '<li class="' + (i.ok ? 'ok' : 'ko') + '"><span class="res-ic">' + (i.ok ? '✓' : '!') + '</span><span><b>' + esc(S.lang === 'en' ? i.en : i.fr) + '</b>' + ((S.lang === 'en' ? i.den : i.dfr) ? '<span class="d">' + esc(S.lang === 'en' ? i.den : i.dfr) + '</span>' : '') + '</span></li>'; }).join('') + '</ul>' +
+    whyHTML(rec.d) + '<p class="small">' + esc(t('dataNote')) + '</p>' +
+    '<div class="note note-train">' + esc(t('resEnd')) + '</div>' +
+    '<div class="btn-row"><button class="btn btn-primary" data-m="next">' + esc(t('resNext')) + '</button><button class="btn btn-outline" data-m="retry">' + esc(t('resRetry')) + '</button><button class="btn btn-outline" data-m="list">' + esc(t('resList')) + '</button><button class="btn btn-outline" data-m="copy">' + esc(t('resCopy')) + '</button></div><div id="copyArea"></div></div>';
+  openModal(h, true);
+}
+function resultText(){
+  var R = S.lastResult, C = CASES[R.cid], rec = findRec(R.code), ev = evaluate(R.cid, rec), en = S.lang === 'en';
+  var lines = [(en ? 'CURY EMR practice' : 'Exercice EMR CURY') + ' · ' + C.code + ' · ' + accountName() + ' · ' + dmyhms(new Date()),
+    (en ? 'Points: ' : 'Points : ') + ev.score + '/' + ev.total + ' · ' + (en ? 'Priority: ' : 'Priorité : ') + U(PRIO[ev.priority].badge) + ' (' + (en ? 'expected ' : 'attendue ') + U(PRIO[C.expect.priority].badge) + ') · ' + mmss(R.time)];
+  ev.items.forEach(function(i){ if (!i.ok) lines.push('✗ ' + (en ? i.en : i.fr) + ((en ? i.den : i.dfr) ? ' — ' + (en ? i.den : i.dfr) : '')); });
+  return lines.join('\n');
+}
+function copyResult(){
+  var txt = resultText(), done = function(){ toast(t('resCopied'), 't-train'); };
+  var fallback = function(){
+    var a = $('#copyArea'); a.innerHTML = '<p class="small">' + esc(t('resCopyManual')) + '</p><textarea class="copybox inp" readonly></textarea>';
+    var ta = a.querySelector('textarea'); ta.value = txt; ta.style.height = '140px'; ta.focus(); ta.select();
+    try { if (document.execCommand('copy')) done(); } catch (e) {}
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, fallback); else fallback();
+}
+function showFreeResult(code){
+  var rec = findRec(code); if (!rec) return; var P = PRIO[rec.priority]; S.lastFree = code;
+  openModal(modalHead(t('freeTitle')) + '<div class="panel-b"><p>' + esc(t('resPrio')) + (S.lang === 'en' ? ': ' : ' : ') + '<span class="badge bl-' + P.cls + '">' + ue(P.badge) + '</span>' + (rec.status === 'pending' ? ' <span class="badge bl-warning">' + ue('EN ATTENTE') + '</span>' : '') + '</p>' +
+    (rec.status === 'pending' ? '<div class="note note-train">' + esc(t('resPending')) + '</div>' : '') + whyHTML(rec.d) + '<p class="small">' + esc(t('dataNote')) + '</p>' +
+    '<div class="note note-train">' + esc(t('resEnd')) + '</div><div class="btn-row"><button class="btn btn-primary" data-m="newfree">' + (S.lang === 'en' ? 'New triage' : 'Nouveau triage') + '</button><button class="btn btn-outline" data-m="close">' + esc(t('close')) + '</button></div></div>');
+}
+
+/* ---------- guide du formateur ---------- */
+function measuresGuide(ms){
+  var cell = function(m){ return m ? '<th>' + esc(L(m[0])) + '</th><td>' + esc(fill(L(m[1]))) + '</td>' : '<th></th><td></td>'; };
+  var r4 = '', r2 = '';
+  for (var i = 0; i < ms.length; i += 2) r4 += '<tr>' + cell(ms[i]) + cell(ms[i + 1]) + '</tr>';
+  ms.forEach(function(m){ r2 += '<tr>' + cell(m) + '</tr>'; });
+  return '<table class="g-tbl g-m g-m4">' + r4 + '</table><table class="g-tbl g-m2">' + r2 + '</table>';
+}
+function altHTML(X, en){
+  var alt = [], ch = [], sep = en ? '; ' : ' ; ', T = function(x){ return en ? EN(x) : x; };
+  if (X.motifsOpt.length) alt.push((en ? 'complaints ' : 'motifs ') + X.motifsOpt.map(function(c){ return motifTxt(c, en ? 'en' : 'fr'); }).join(sep));
+  if (X.signsOpt.length) alt.push((en ? 'signs ' : 'signes ') + X.signsOpt.map(function(x){ return T(x); }).join(sep));
+  for (var k in CHILD_EQ) if (X.signs.indexOf(CHILD_EQ[k]) >= 0) ch.push(en ? '“' + EN(k) + '”' : '« ' + k + ' »');
+  if (ch.length) alt.push((en ? 'child labels ' : 'libellés enfant ') + ch.join(', ') + (en ? ' (with a remark)' : ' (avec remarque)'));
+  if (X.sel.tdr && X.sel.tdr.indexOf(null) >= 0) alt.push(en ? 'RDT “(Not done)” or empty' : 'TDR « (Pas fait) » ou vide');
+  return alt.length ? '<p><b>' + (en ? 'Also accepted:' : 'Accepté aussi :') + '</b> ' + esc(alt.join(' · ')) + '</p>' : '';
+}
+function guideHTML(){
+  var en = S.lang === 'en', h = '';
+  h += '<h3>' + (en ? 'What this practice is for' : 'À quoi sert cet exercice') + '</h3><p>' + (en ?
+    'Staff practise the triage screens of the CURY system without the hospital network, without an account and without risk for real records. The practice copies the screens photographed on 27/10/2026 and the TEST cases of the medical-records training.' :
+    "Le personnel s'entraîne aux écrans de triage du système CURY sans réseau de l'hôpital, sans compte et sans risque pour les vrais dossiers. L'exercice reprend les écrans photographiés le 27/10/2026 et les cas TEST de la formation sur les dossiers médicaux.") + '</p>';
+  h += '<h3>' + (en ? 'Suggested session (40 min, 3–5 people)' : 'Déroulement conseillé (40 min, 3 à 5 personnes)') + '</h3><table class="g-tbl"><tr><th>' + (en ? 'Time' : 'Temps') + '</th><th>' + (en ? 'Activity' : 'Activité') + '</th></tr>' +
+    (en ? '<tr><td>0–5 min</td><td>Purpose of the practice; fictitious data. On the real system, practise only with TEST patients.</td></tr><tr><td>5–15 min</td><td>Follow along: the trainer projects TEST 02 step by step; participants do the same on their screen.</td></tr><tr><td>15–30 min</td><td>On their own: TEST 01 and TEST 03. The trainer observes with the observation checklist below.</td></tr><tr><td>30–35 min</td><td>Error finding: TEST 04 (resume a pending triage, three errors).</td></tr><tr><td>35–40 min</td><td>“System down”: write one triage on the paper form with the time. Log out; Windows + L.</td></tr>' :
+    '<tr><td>0–5 min</td><td>Objectif de l’exercice ; données fictives. Sur le système réel, s’exercer seulement avec des patients TEST.</td></tr><tr><td>5–15 min</td><td>Suivre : le formateur projette TEST 02 étape par étape ; les participants font la même chose sur leur écran.</td></tr><tr><td>15–30 min</td><td>En autonomie : TEST 01 et TEST 03. Le formateur observe avec la fiche d’observation ci-dessous.</td></tr><tr><td>30–35 min</td><td>Trouver les erreurs : TEST 04 (reprendre un triage en attente, trois erreurs).</td></tr><tr><td>35–40 min</td><td>« Panne du système » : écrire un triage sur le formulaire papier avec l’heure. Se déconnecter ; Windows + L.</td></tr>') + '</table>';
+  h += '<h3>' + (en ? 'Cases and answers' : 'Cas et corrigé') + '</h3>';
+  CASE_ORDER.forEach(function(id){
+    var C = CASES[id], X = C.expect, p = pById(C.patient);
+    h += '<div class="g-case"><h4>' + C.code + ' · ' + esc(L(C.title)) + '</h4><p><b>' + esc(p.name) + '</b> (' + p.id + ') · ' + (p.sex === 'F' ? t('woman') : t('man')) + ', ' + ageOf(p.dob) + ' ' + t('years') + ' · ' + bornTxt(p) + ' ' + dmyISO(p.dob) + '</p><p>' + esc(L(C.story)) + '</p>' +
+      measuresGuide(C.measures) +
+      '<p><b>' + (en ? 'Answer:' : 'Corrigé :') + '</b> ' + (en ? 'complaint ' : 'motif ') + esc(X.motifs.map(function(c){ return motifTxt(c, en ? 'en' : 'fr'); }).join(en ? '; ' : ' ; ')) + ' · ' + (en ? 'signs: ' : 'signes : ') + esc(X.signs.length ? X.signs.map(function(x){ return en ? EN(x) : x; }).join(en ? '; ' : ' ; ') : (en ? 'none' : 'aucun')) + ' · ' + (en ? 'CENTRAL CYANOSIS: ' + EN(X.cyanose) : 'CYANOSE CENTRALE : ' + X.cyanose) + ' · ' + (en ? 'priority ' + EN(PRIO[X.priority].badge) : 'priorité ' + PRIO[X.priority].badge) + '</p>' + altHTML(X, en) +
+      '<ul class="g-list">' + L(C.notes).map(function(n){ return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div>';
+  });
+  h += '<h3 class="pb">' + (en ? 'Observation checklist (one column per participant)' : "Fiche d'observation (une colonne par participant)") + '</h3>';
+  var items = en ? ['Turns on the PC and opens the Windows session.', 'Opens the CURY system from the bookmark.', 'Logs in with own account.', 'Finds the patient by code (checks date of birth) or registers the patient.', 'Chooses the complaint from the list.', 'Selects only the signs present, in the right box.', 'Enters AVPU (EVDA), Glasgow and vital signs in the right unit; leaves unmeasured boxes empty.', 'Enters the tests.', 'Reads the values and the priority in the summary, then submits.', 'Logs out or locks the screen (Windows + L).', 'Downtime: writes the triage on the paper form with the time.'] :
+    ['Allume le PC et ouvre la session Windows.', 'Ouvre le système CURY avec le favori.', 'Se connecte avec son propre compte.', 'Trouve le patient par son code (vérifie la date de naissance) ou l’enregistre.', 'Choisit le motif dans la liste.', 'Choisit seulement les signes présents, dans la bonne case.', 'Saisit EVDA, Glasgow et les paramètres dans la bonne unité ; laisse vides les cases non mesurées.', 'Saisit les examens.', 'Lit les valeurs et la priorité dans le résumé, puis soumet.', 'Se déconnecte ou verrouille l’écran (Windows + L).', 'Panne : écrit le triage sur le formulaire papier avec l’heure.'];
+  h += '<table class="g-tbl"><tr><th>#</th><th>' + (en ? 'Item' : 'Point') + '</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr><tr><td></td><td>' + (en ? 'Name / job / date' : 'Nom / fonction / date') + '</td><td></td><td></td><td></td><td></td><td></td></tr>' +
+    items.map(function(x, i){ return '<tr><td>' + (i + 1) + '</td><td>' + esc(x) + '</td><td></td><td></td><td></td><td></td><td></td></tr>'; }).join('') + '</table>' +
+    '<p class="small">' + (en ? 'Items 1–3 and 11 are done on a real PC and on paper; the practice covers items 4–10. “Practice completed” = at least 9 of items 1–10, plus item 11.' : 'Les points 1–3 et 11 se font sur un vrai PC et sur papier ; l’exercice couvre les points 4–10. « Pratique terminée » = au moins 9 points sur 1–10, plus le point 11.') + '</p>';
+  h += '<h3>' + (en ? 'Differences with the real system (to check on site)' : 'Différences avec le système réel (à vérifier sur place)') + '</h3><ul class="g-list">' + (en ? [
+    'The EN button translates the screens to help reading. The real system and the FR button are in French: staff should practise in FR.',
+    'This is not the CURY system: a simplified copy with fictitious data. Nothing is sent and triages are not kept: reloading the page resets everything.',
+    'Screens are copied from photos taken on 27/10/2026 on the IT team’s laptop. The hospital server version may differ.',
+    'Priority in the practice: simplified IITT rule. Red sign → CRITICAL (CRITIQUE); yellow sign → SEVERE (SÉVÈRE); otherwise MODERATE (MODÉRÉ). Also red: CENTRAL CYANOSIS “Yes”, AVPU “Unresponsive”, capillary refill > 3 s, heart rate < 50 or > 150. Red when two signs among altered consciousness / fever or hypothermia / stiff neck / headache (altered consciousness alone = yellow), and when a child has two signs of severe dehydration. High-risk vital signs are flagged in the correction but do not change the calculated priority (except heart rate < 50 or > 150). The real rule is not known; on the real system an empty triage showed “Patient critique”.',
+    'Labels (NORMALE, ÉLEVÉE…) use simple thresholds. The real system showed “PAM ÉLEVÉE” (MAP HIGH) for 93.33.',
+    'Ideal weight (Lorentz): calculated like the real system on the photo (woman, 175 cm → 62.50, i.e. H − 100 − (H − 150)/2; man: /4).',
+    'Short complaint list (25 ICD-11 codes; labels translated for the practice). The real list starts at MA00 (chapter 21, symptoms); it is not known whether it includes chapter 22 (injuries). The two TEST 02 complaints (NC91.Z, NC30.2) are from chapter 22: check on site that “plaie” and “écorchure” give a result in the real list.',
+    'The summary line “Enceinte avec l’un des suivants” was seen only in the real summary; its input box was not found, so it is not copied.',
+    'The real login screen and the registration screen (Accueil - Enregistrement) were not photographed: the practice starts without a password and offers a simplified registration screen (practice patients P26-EX…).',
+    'Urine dipstick: the Glucose, Urobilinogènes and Ascorbic acide options were partly unreadable on the photos; values are approximate.',
+    'Summary for SÉVÈRE and MODÉRÉ: wording assumed from the list legend (“À surveiller”, “Stable”).',
+    'Step 1 shows “Please enter 3 or more characters” in English, as on the real system.'] : [
+    "Le bouton EN traduit les écrans pour aider à la lecture. Le système réel et le bouton FR sont en français : le personnel s'exerce en FR.",
+    "Ce n'est pas le système CURY : copie simplifiée avec des données fictives. Rien n'est envoyé et les triages ne sont pas gardés : recharger la page remet tout à zéro.",
+    "Écrans reproduits d'après les photos du 27/10/2026 (ordinateur de l'équipe informatique). La version du serveur de l'hôpital peut différer.",
+    "Priorité dans l'exercice : règle IITT simplifiée. Signe rouge → CRITIQUE ; signe jaune → SÉVÈRE ; sinon MODÉRÉ. Aussi rouge : CYANOSE CENTRALE « Oui », EVDA « Absence de réponse », TRC > 3 s, FC < 50 ou > 150. Rouge si deux signes parmi altération de la conscience / fièvre ou hypothermie / raideur de la nuque / céphalée (une altération de la conscience seule = jaune), et si l'enfant a deux signes de déshydratation sévère. Les signes vitaux à haut risque sont signalés dans la correction mais ne changent pas la priorité calculée (sauf FC < 50 ou > 150). La règle réelle n'est pas connue ; sur le système réel, un triage vide a affiché « Patient critique ».",
+    'Étiquettes (NORMALE, ÉLEVÉE…) : seuils simples. Le système réel a affiché « PAM ÉLEVÉE » pour 93,33.',
+    'Poids idéal (Lorentz) : calculé comme le système réel sur la photo (femme, 175 cm → 62,50, soit T − 100 − (T − 150)/2 ; homme : /4).',
+    "Liste des motifs courte (25 codes CIM-11 ; libellés traduits pour l'exercice). La liste réelle commence à MA00 (chapitre 21, symptômes) ; on ne sait pas si elle contient le chapitre 22 (lésions traumatiques). Les deux motifs de TEST 02 (NC91.Z, NC30.2) sont du chapitre 22 : vérifier sur place que « plaie » et « écorchure » donnent un résultat dans la liste réelle.",
+    "La ligne « Enceinte avec l’un des suivants » n'a été vue que dans le résumé réel ; la case de saisie n'a pas été trouvée, elle n'est pas reproduite.",
+    "L'écran de connexion et l'écran d'enregistrement (Accueil - Enregistrement) n'ont pas été photographiés : l'exercice commence sans mot de passe et propose un écran d'enregistrement simplifié (patients d'exercice P26-EX…).",
+    'Bandelette urinaire : les choix Glucose, Urobilinogènes et Ascorbic acide étaient en partie illisibles sur les photos ; valeurs approximatives.',
+    'Résumé pour SÉVÈRE et MODÉRÉ : phrase supposée d’après la légende de la liste (« À surveiller », « Stable »).',
+    'À l’étape 1, le message « Please enter 3 or more characters » est en anglais, comme sur le système réel.']).map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+  h += '<h3>' + (en ? 'Technical use' : 'Utilisation technique') + '</h3><ul class="g-list">' + (en ? ['Link (phone or computer, with internet): https://joojeong.github.io/exercise-triage/', 'File (without internet): open it in Chrome or Edge (double-click).', 'Several PCs: copy the file (USB key, WhatsApp, e-mail).', 'Projector: enlarge with Ctrl + / Ctrl −.', 'Phone: the case card stays at the bottom of the screen: tap it to open or hide it.', 'iPhone: use the link. The file alone does not run in the WhatsApp or Files preview. Android: the link, or the file opened with Chrome.'] : ['Lien (téléphone ou ordinateur, avec internet) : https://joojeong.github.io/exercise-triage/', 'Fichier (sans internet) : l’ouvrir dans Chrome ou Edge (double-clic).', 'Plusieurs postes : copier le fichier (clé USB, WhatsApp, e-mail).', 'Projection : agrandir avec Ctrl + / Ctrl −.', 'Téléphone : la fiche du cas reste en bas de l’écran ; la toucher pour l’ouvrir ou la réduire.', 'iPhone : utiliser le lien. Le fichier seul ne marche pas dans l’aperçu de WhatsApp ou de Fichiers. Android : le lien, ou le fichier ouvert avec Chrome.']).map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+  h += '<p class="small">' + (en ? 'Version of 29/10/2026 (online) · prepared for the CURY medical-records training (KOICA project; PMC: Seoul National University Hospital).' : 'Version du 29/10/2026 (en ligne) · préparée pour la formation sur les dossiers médicaux du CURY (projet KOICA ; PMC : Seoul National University Hospital).') + '</p>';
+  return h;
+}
+function openGuide(){
+  var g = $('#guideScreen');
+  g.innerHTML = '<div class="panel"><div class="panel-h"><span class="tb-tag">' + (S.lang === 'en' ? 'PRACTICE' : 'EXERCICE') + '</span><h2>' + esc(t('guideTitle')) + '</h2>' +
+    '<button class="tbtn" data-g="print">' + esc(t('print')) + '</button><button class="tbtn" data-g="close">' + esc(t('close')) + '</button></div><div class="panel-b">' + guideHTML() + '</div></div>';
+  g.hidden = false; g.scrollTop = 0;
+}
+function fillPrint(){ $('#printArea').innerHTML = '<h2>' + esc(t('guideTitle')) + ' · ' + esc(t('startTitle')) + '</h2>' + guideHTML(); }
+window.addEventListener('beforeprint', function(){ if (!$('#guideScreen').hidden){ fillPrint(); document.body.classList.add('printing'); } });
+window.addEventListener('afterprint', function(){ document.body.classList.remove('printing'); });
+
+/* ---------- messages ---------- */
+function toast(msg, cls){
+  var box = $('#toasts'), el = document.createElement('div'); el.className = 'toast ' + (cls || ''); el.textContent = msg;
+  while (box.children.length >= 2) box.removeChild(box.firstChild);
+  box.appendChild(el); setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 4200);
+}
+
+/* ---------- événements ---------- */
+function setLang(l){
+  S.lang = l; store.set('lang', l); document.documentElement.lang = l === 'en' ? 'en' : 'fr';
+  $('#toasts').innerHTML = '';
+  render(); renderNavbar();
+  if (!$('#startScreen').hidden) showStart();
+  if (!$('#guideScreen').hidden) openGuide();
+  if (!$('#modalScreen').hidden && S.lastResult && $('#modalScreen [data-m="next"]')) renderResult();
+  else if (!$('#modalScreen').hidden && S.lastFree && $('#modalScreen [data-m="newfree"]')) showFreeResult(S.lastFree);
+}
+document.addEventListener('click', function(e){
+  var el;
+  if ((el = e.target.closest('[data-lang]'))){ setLang(el.getAttribute('data-lang')); return; }
+  if ((el = e.target.closest('[data-tb]'))){
+    var a = el.getAttribute('data-tb');
+    if (a === 'guide') openGuide();
+    else if (a === 'home'){ closeModal(); $('#guideScreen').hidden = true; showStart(); }
+    else if (a === 'case'){ S.caseOpen = !S.caseOpen; renderCasePanel(); }
+    return;
+  }
+  if ((el = e.target.closest('[data-start]'))){ startCase(el.getAttribute('data-start')); return; }
+  if ((el = e.target.closest('[data-g]'))){
+    if (el.getAttribute('data-g') === 'close') $('#guideScreen').hidden = true;
+    else { fillPrint(); document.body.classList.add('printing'); window.print(); setTimeout(function(){ document.body.classList.remove('printing'); }, 500); }
+    return;
+  }
+  if ((el = e.target.closest('[data-m]'))){
+    var m = el.getAttribute('data-m');
+    if (m === 'close') closeModal();
+    else if (m === 'list'){ closeModal(); go('triage-list'); }
+    else if (m === 'copy') copyResult();
+    else if (m === 'retry'){ closeModal(); startCase(S.lastResult.cid); }
+    else if (m === 'next'){ closeModal(); var i = CASE_ORDER.indexOf(S.lastResult.cid); if (i < CASE_ORDER.length - 1) startCase(CASE_ORDER[i + 1]); else showStart(); }
+    else if (m === 'newfree'){ closeModal(); S.d = newData(); S.step = 1; S.editing = null; go('triage-new'); }
+    return;
+  }
+  if (isPhone() && e.target.closest('#casePanel .cp-head') && !e.target.closest('[data-cp]')){ S.caseOpen = false; renderCasePanel(); return; }
+  if ((el = e.target.closest('[data-cp]'))){
+    var c = el.getAttribute('data-cp');
+    if (c === 'close'){ S.caseOpen = false; renderCasePanel(); }
+    else if (c === 'open'){ S.caseOpen = true; renderCasePanel(); if (isPhone() && S.view === 'triage-new' && (S.step === 3 || S.step === 4 || (S.caseId === 'T04' && S.step < 5))) cpToMeasures(); }
+    else if (c === 'hint') showHint();
+    else if (c === 'restart') startCase(S.caseId || 'free');
+    return;
+  }
+  if ((el = e.target.closest('[data-nb]'))){
+    var n = el.getAttribute('data-nb');
+    if (n === 'burger') document.body.classList.toggle('menu-open');
+    else if (n === 'avatar'){ var mm = $('#avMenu'); mm.hidden = !mm.hidden; }
+    else if (n === 'logout'){ $('#avMenu').hidden = true; S.d = newData(); S.step = 1; S.editing = null; closeModal(); showStart(t('loggedOut')); }
+    else { var am = $('#avMenu'); if (am) am.hidden = true; toast(t('notIncluded'), 't-train'); }
+    return;
+  }
+  if ((el = e.target.closest('[data-nav]'))){
+    var v = el.getAttribute('data-nav');
+    if (v.indexOf('triage') === 0 || v === 'accueil-enr'){ go(v); }
+    else { document.body.classList.remove('menu-open'); toast(v === 'accueil-enr' ? t('notIncludedReg') : t('notIncluded'), 't-train'); }
+    return;
+  }
+  if ((el = e.target.closest('[data-step]'))){
+    var st = +el.getAttribute('data-step');
+    if (st > 1 && !S.d.patient){ toast(t('choosePatient'), 't-train'); return; }
+    stepGo(st); return;
+  }
+  if ((el = e.target.closest('[data-act]'))){
+    var act = el.getAttribute('data-act'), code = el.getAttribute('data-code');
+    if (act === 'next'){ if (S.step === 1 && !S.d.patient){ toast(t('choosePatient'), 't-train'); return; } stepGo(Math.min(5, S.step + 1)); }
+    else if (act === 'prev'){ stepGo(Math.max(1, S.step - 1)); }
+    else if (act === 'submit') finish('submitted');
+    else if (act === 'hold') finish('pending');
+    else if (act === 'help') showHint();
+    else if (act === 'resume') resume(code);
+    else if (act === 'detail'){ S.detailCode = code; go('triage-detail'); }
+    else if (act === 'consult' || act === 'na') toast(t('notIncluded'), 't-train');
+    else if (act === 'new'){ S.d = newData(); S.step = 1; S.editing = null; go('triage-new'); }
+    else if (act === 'hist'){ var hb = document.getElementById('hb_' + code); if (hb) hb.hidden = !hb.hidden; }
+    else if (act === 'filter'){ S.filter.from = $('#fFrom').value; S.filter.to = $('#fTo').value; S.filter.pending = $('#fPend').checked; refreshTable(); }
+    else if (act === 'freset'){ S.filter = {from:ymd(addDays(TODAY, -30)), to:ymd(TODAY), pending:false, q:'', n:10}; render(); }
+    else if (act === 'newpatient'){ S.reg = newReg(); go('accueil-enr'); setTimeout(function(){ var f = $('#r_nom'); if (f) f.focus(); }, 0); }
+    else if (act === 'regsave') saveReg();
+    else if (act === 'regnew' || act === 'regclear'){ S.reg = newReg(); render(); }
+    else if (act === 'regtriage'){ S.d = newData(); S.d.patient = code; S.step = 1; S.editing = null; go('triage-new'); }
+    return;
+  }
+  var av = $('#avMenu'); if (av && !av.hidden && !e.target.closest('#avMenu')) av.hidden = true;
+  var gd = $('#gdrop'); if (gd && !gd.hidden && !e.target.closest('.nb-search')) gd.hidden = true;
+  if (document.body.classList.contains('menu-open') && !e.target.closest('#menu')) document.body.classList.remove('menu-open');
+});
+document.addEventListener('input', function(e){
+  var f = e.target.getAttribute && e.target.getAttribute('data-f');
+  if (f){ S.d[f] = e.target.value; if (S.step === 3) updateCalc(); return; }
+  var rk = e.target.getAttribute && e.target.getAttribute('data-r');
+  if (rk){ (S.reg || (S.reg = newReg()))[rk] = e.target.value; return; }
+  if (e.target.id === 'fQ'){ S.filter.q = e.target.value; refreshTable(); return; }
+  if (e.target.id === 'gsearch'){
+    var q = norm(e.target.value.trim()), gd = $('#gdrop');
+    if (q.length < 3){ gd.innerHTML = q.length ? '<div class="msg">Please enter 3 or more characters</div>' : ''; gd.hidden = !q.length; return; }
+    var res = PATIENTS.filter(function(p){ return norm(p.id + ' ' + p.name).indexOf(q) >= 0; });
+    gd.innerHTML = res.length ? res.map(function(p){ return '<div data-gp="' + p.id + '">' + p.id + ' - ' + esc(p.name) + ' · ' + dmyISO(p.dob) + '</div>'; }).join('') : '<div class="msg">No results found</div>';
+    gd.hidden = false;
+  }
+});
+document.addEventListener('mousedown', function(e){ if (e.target.closest('[data-gp]')){ e.preventDefault(); $('#gdrop').hidden = true; $('#gsearch').value = ''; toast(t('notPatientFile'), 't-train'); } });
+document.addEventListener('change', function(e){
+  var ev = e.target.getAttribute && e.target.getAttribute('data-evda');
+  if (ev){ var arr = S.d.evda.filter(function(x){ return x !== ev; }); if (e.target.checked) arr.push(ev); S.d.evda = EVDA.map(function(x){ return x[0]; }).filter(function(k){ return arr.indexOf(k) >= 0; }); return; }
+  if (e.target.id === 'fN'){ S.filter.n = +e.target.value; refreshTable(); }
+  if (e.target.id === 'learnerName'){ S.learner = e.target.value.trim(); store.set('learner', S.learner); }
+});
+document.addEventListener('keydown', function(e){
+  if ((e.ctrlKey || e.metaKey) && e.key === '/'){ var g = $('#gsearch'); if (g && $('#startScreen').hidden){ e.preventDefault(); g.focus(); } }
+  if (e.key === 'Escape'){
+    if (!$('#modalScreen').hidden){ closeModal(); return; }
+    if (!$('#guideScreen').hidden){ $('#guideScreen').hidden = true; return; }
+  }
+  if (e.key === 'Enter' && e.target.id === 'learnerName'){ e.preventDefault(); readName(); }
+  if (e.key === 'Enter' && e.target.getAttribute && e.target.getAttribute('data-r')){ e.preventDefault(); saveReg(); }
+});
+$('#modalScreen').addEventListener('mousedown', function(e){ if (e.target.id === 'modalScreen') closeModal(); });
+window.addEventListener('resize', function(){ setTbh(); setCpb(); });
+function typeable(el){
+  if (!el || !el.tagName || el.readOnly) return false;
+  if (el.tagName === 'TEXTAREA') return true;
+  return el.tagName === 'INPUT' && ['text','search','tel','number','email','password','url'].indexOf((el.getAttribute('type') || 'text').toLowerCase()) >= 0;
+}
+document.addEventListener('focusin', function(e){ if (isPhone() && typeable(e.target)) document.body.classList.add('kb'); });
+document.addEventListener('focusout', function(){ setTimeout(function(){ if (!typeable(document.activeElement) && document.body.classList.contains('kb')){ document.body.classList.remove('kb'); setCpb(); } }, 150); });
+
+/* ---------- démarrage ---------- */
+document.documentElement.lang = S.lang === 'en' ? 'en' : 'fr';
+seed(); renderNavbar(); render(); showStart();
+})();
+</script>
+</body>
+</html>
