@@ -907,7 +907,7 @@ var TXT = {
   nameLabel:'Votre nom (facultatif, pour le résultat)', choose:'Choisissez un exercice', freeDesc:"Triage de n'importe quel patient TEST, sans correction.",
   startNote:"Rien n'est envoyé : tout reste sur cet appareil (seuls votre nom et la langue choisie sont gardés). Recharger la page remet l'exercice à zéro.",
   loggedOut:"Vous êtes déconnecté(e). Si vous quittez le poste, verrouillez aussi l'écran : touche Windows + L.",
-  cpTitle:'Fiche du cas', cpMeasures:'Ce qui a été mesuré', cpPaper:'Fiche papier (valeurs exactes)', cpTasks:'À faire', cpHint:"Indice pour l'étape en cours", cpRestart:'Recommencer ce cas', brand:'Exercice', footer:'Exercice de formation · données fictives · ce n’est pas le système CURY', cpOpen:'Voir la fiche', cpCollapse:'Réduire', cpBarIdle:'Touchez pour voir le cas et les mesures.', stepWord:'Étape',
+  cpTitle:'Fiche du cas', cpMeasures:'Ce qui a été mesuré', cpPaper:'Fiche papier (valeurs exactes)', cpTasks:'À faire', cpHint:"Indice pour l'étape en cours", cpRestart:'Recommencer ce cas', offFirst:"Après une première ouverture avec internet, l'exercice s'ouvre aussi sans internet sur cet appareil.", offReady:"✓ Gardé sur cet appareil : l'exercice s'ouvre aussi sans internet.", offHome:"Pour le retrouver facilement, ajoutez-le à l'écran d'accueil. Android : menu ⋮ → « Ajouter à l'écran d'accueil » ou « Installer l'application ». iPhone : dans Safari, Partager → « Sur l'écran d'accueil », puis ouvrez l'icône une fois avec internet.", offNo:"Ce navigateur ne peut pas garder l'exercice sur l'appareil : il faudra internet à chaque ouverture. Pour l'avoir aussi sans internet, ouvrez le lien dans Chrome (Android) ou Safari (iPhone).", brand:'Exercice', footer:'Exercice de formation · données fictives · ce n’est pas le système CURY', cpOpen:'Voir la fiche', cpCollapse:'Réduire', cpBarIdle:'Touchez pour voir le cas et les mesures.', stepWord:'Étape',
   phoneNote:"Sur téléphone : la fiche du cas (histoire, mesures, à faire) reste en bas de l'écran. Touchez-la pour l'ouvrir ou la réduire.",
   cpFreeText:"Dans CODE PATIENT, tapez « TEST » pour trouver un patient fictif (P26-TEST01 à P26-TEST08), ou créez un patient dans Accueil - Enregistrement. Inventez un cas ou utilisez une fiche papier. À la fin, l'exercice montre la priorité calculée et pourquoi (sans correction).",
   stepHint:'Tapez « TEST » pour trouver les patients fictifs (P26-TEST01 à P26-TEST08).', notFound:'Patient introuvable ?', createLink:"Créer un patient d'exercice",
@@ -936,7 +936,7 @@ var TXT = {
   nameLabel:'Your name (optional, for the result)', choose:'Choose an exercise', freeDesc:'Triage any TEST patient, without correction.',
   startNote:'Nothing is sent: everything stays on this device (only your name and the chosen language are kept). Reloading the page resets the practice.',
   loggedOut:'You are logged out. If you leave the computer, also lock the screen: Windows key + L.',
-  cpTitle:'Case card', cpMeasures:'What was measured', cpPaper:'Paper form (correct values)', cpTasks:'To do', cpHint:'Hint for this step', cpRestart:'Restart this case', brand:'Practice', footer:'Training exercise · fictitious data · not the CURY system', cpOpen:'Show card', cpCollapse:'Hide', cpBarIdle:'Tap to see the case and the measurements.', stepWord:'Step',
+  cpTitle:'Case card', cpMeasures:'What was measured', cpPaper:'Paper form (correct values)', cpTasks:'To do', cpHint:'Hint for this step', cpRestart:'Restart this case', offFirst:'After a first visit with internet, the practice also opens without internet on this device.', offReady:'✓ Saved on this device: the practice also opens without internet.', offHome:'To find it easily, add it to the home screen. Android: menu ⋮ → “Add to Home screen” or “Install app”. iPhone: in Safari, Share → “Add to Home Screen”, then open the icon once with internet.', offNo:'This browser cannot keep the practice on the device: it will need internet each time. To have it without internet too, open the link in Chrome (Android) or Safari (iPhone).', brand:'Practice', footer:'Training exercise · fictitious data · not the CURY system', cpOpen:'Show card', cpCollapse:'Hide', cpBarIdle:'Tap to see the case and the measurements.', stepWord:'Step',
   phoneNote:'On a phone: the case card (story, measurements, to do) stays at the bottom of the screen. Tap it to open or hide it.',
   cpFreeText:'In PATIENT CODE, type “TEST” to find a fictitious patient (P26-TEST01 to P26-TEST08), or create a patient in Reception - Registration. Make up a case or use a paper form. At the end, the practice shows the calculated priority and why (no correction).',
   stepHint:'Type “TEST” to find the fictitious patients (P26-TEST01 to P26-TEST08).', notFound:'Patient not found?', createLink:'Create a practice patient',
@@ -1556,6 +1556,7 @@ function showStart(msg){
     '<label class="start-name"><span>' + esc(t('nameLabel')) + '</span><input class="inp" id="learnerName" autocomplete="off" value="' + esc(S.learner) + '"></label>' +
     '<h3>' + esc(t('choose')) + '</h3><div class="start-grid">' + cases + '<button class="case-btn free" data-start="free"><b>' + esc(t('tbFree')) + '</b><span>' + esc(t('freeDesc')) + '</span></button></div>' +
     '<div class="start-foot"><button class="tbtn" data-tb="guide">' + esc(t('tbGuide')) + '</button></div>' +
+    (WEB ? '<div class="train-note" id="offNote">' + offNoteHTML() + '</div>' : '') +
     '<p class="small" style="margin-top:12px">' + esc(t('startNote')) + '</p></div></div>';
   sc.hidden = false;
 }
@@ -1854,8 +1855,8 @@ function guideHTML(){
     'Bandelette urinaire : les choix Glucose, Urobilinogènes et Ascorbic acide étaient en partie illisibles sur les photos ; valeurs approximatives.',
     'Résumé pour SÉVÈRE et MODÉRÉ : phrase supposée d’après la légende de la liste (« À surveiller », « Stable »).',
     'À l’étape 1, le message « Please enter 3 or more characters » est en anglais, comme sur le système réel.']).map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
-  h += '<h3>' + (en ? 'Technical use' : 'Utilisation technique') + '</h3><ul class="g-list">' + (en ? ['Link (phone or computer, with internet): https://joojeong.github.io/exercise-triage/', 'File (without internet): open it in Chrome or Edge (double-click).', 'Several PCs: copy the file (USB key, WhatsApp, e-mail).', 'Projector: enlarge with Ctrl + / Ctrl −.', 'Phone: the case card stays at the bottom of the screen: tap it to open or hide it.', 'iPhone: use the link. The file alone does not run in the WhatsApp or Files preview. Android: the link, or the file opened with Chrome.'] : ['Lien (téléphone ou ordinateur, avec internet) : https://joojeong.github.io/exercise-triage/', 'Fichier (sans internet) : l’ouvrir dans Chrome ou Edge (double-clic).', 'Plusieurs postes : copier le fichier (clé USB, WhatsApp, e-mail).', 'Projection : agrandir avec Ctrl + / Ctrl −.', 'Téléphone : la fiche du cas reste en bas de l’écran ; la toucher pour l’ouvrir ou la réduire.', 'iPhone : utiliser le lien. Le fichier seul ne marche pas dans l’aperçu de WhatsApp ou de Fichiers. Android : le lien, ou le fichier ouvert avec Chrome.']).map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
-  h += '<p class="small">' + (en ? 'Version of 29/10/2026 (online) · prepared for the CURY medical-records training (KOICA project; PMC: Seoul National University Hospital).' : 'Version du 29/10/2026 (en ligne) · préparée pour la formation sur les dossiers médicaux du CURY (projet KOICA ; PMC : Seoul National University Hospital).') + '</p>';
+  h += '<h3>' + (en ? 'Technical use' : 'Utilisation technique') + '</h3><ul class="g-list">' + (en ? ['Link (phone or computer, with internet): https://joojeong.github.io/exercise-triage/', 'File (without internet): open it in Chrome or Edge (double-click).', 'Several PCs: copy the file (USB key, WhatsApp, e-mail).', 'Projector: enlarge with Ctrl + / Ctrl −.', 'Without internet: after a first visit to the link with internet, the practice also opens without internet on the same device and browser. On iPhone, add it to the Home Screen so that it stays saved, then open it once from the icon with internet (the icon keeps its own copy).', 'Phone: the case card stays at the bottom of the screen: tap it to open or hide it.', 'iPhone: use the link. The file alone does not run in the WhatsApp or Files preview. Android: the link, or the file opened with Chrome.'] : ['Lien (téléphone ou ordinateur, avec internet) : https://joojeong.github.io/exercise-triage/', 'Fichier (sans internet) : l’ouvrir dans Chrome ou Edge (double-clic).', 'Plusieurs postes : copier le fichier (clé USB, WhatsApp, e-mail).', 'Projection : agrandir avec Ctrl + / Ctrl −.', 'Sans internet : après une première ouverture du lien avec internet, l’exercice s’ouvre aussi sans internet sur le même appareil et le même navigateur. Sur iPhone, l’ajouter à l’écran d’accueil pour qu’il reste gardé, puis l’ouvrir une fois depuis l’icône avec internet (l’icône garde sa propre copie).', 'Téléphone : la fiche du cas reste en bas de l’écran ; la toucher pour l’ouvrir ou la réduire.', 'iPhone : utiliser le lien. Le fichier seul ne marche pas dans l’aperçu de WhatsApp ou de Fichiers. Android : le lien, ou le fichier ouvert avec Chrome.']).map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>';
+  h += '<p class="small">' + (en ? 'Version of 29/10/2026 (online, works offline after a first visit) · prepared for the CURY medical-records training (KOICA project; PMC: Seoul National University Hospital).' : 'Version du 29/10/2026 (en ligne, marche hors connexion après une première ouverture) · préparée pour la formation sur les dossiers médicaux du CURY (projet KOICA ; PMC : Seoul National University Hospital).') + '</p>';
   return h;
 }
 function openGuide(){
@@ -2002,6 +2003,39 @@ function typeable(el){
 }
 document.addEventListener('focusin', function(e){ if (isPhone() && typeable(e.target)) document.body.classList.add('kb'); });
 document.addEventListener('focusout', function(){ setTimeout(function(){ if (!typeable(document.activeElement) && document.body.classList.contains('kb')){ document.body.classList.remove('kb'); setCpb(); } }, 150); });
+
+/* ---------- hors connexion (site web seulement : le fichier ouvert tel quel ne change pas) ---------- */
+var WEB = /^https?:$/.test(location.protocol);
+function standalone(){ return !!((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone); }
+function offNoteHTML(){
+  if (S.offline === 'no') return esc(t('offNo'));
+  return esc(S.offline === 'ready' ? t('offReady') : t('offFirst')) + (standalone() ? '' : ' ' + esc(t('offHome')));
+}
+function setOffline(v){ S.offline = v; var n = $('#offNote'); if (n) n.innerHTML = offNoteHTML(); }
+function headLink(rel, href){ var l = document.createElement('link'); l.rel = rel; l.href = href; document.head.appendChild(l); }
+/* demander au navigateur de ne pas effacer la copie quand l'appareil manque de place (Chrome, Safari : sans question ; Firefox poserait une question, donc pas pour lui) */
+function keepCopy(){
+  try {
+    if (navigator.storage && navigator.storage.persist && !/Firefox/.test(navigator.userAgent))
+      navigator.storage.persisted().then(function(p){ return p || navigator.storage.persist(); }).catch(function(){});
+  } catch (e) {}
+}
+function checkOffline(){
+  if (!window.caches || !caches.keys) return setOffline('no');
+  caches.keys().then(function(keys){
+    var k = keys.filter(function(x){ return x.indexOf('exercice-triage-') === 0; });
+    if (!k.length) return null;
+    return caches.open(k[0]).then(function(c){ return c.match(new URL('./', location.href).href); });
+  }).then(function(r){ setOffline(r ? 'ready' : 'wait'); if (r) keepCopy(); }).catch(function(){});
+}
+if (WEB){
+  headLink('manifest', 'manifest.webmanifest');
+  headLink('apple-touch-icon', 'apple-touch-icon.png');
+  if ('serviceWorker' in navigator){
+    S.offline = 'wait';
+    navigator.serviceWorker.register('sw.js').then(function(){ return navigator.serviceWorker.ready; }).then(checkOffline).catch(function(){ setOffline('no'); });
+  } else S.offline = 'no';
+}
 
 /* ---------- démarrage ---------- */
 document.documentElement.lang = S.lang === 'en' ? 'en' : 'fr';
