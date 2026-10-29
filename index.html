@@ -907,7 +907,7 @@ var TXT = {
   nameLabel:'Votre nom (facultatif, pour le résultat)', choose:'Choisissez un exercice', freeDesc:"Triage de n'importe quel patient TEST, sans correction.",
   startNote:"Rien n'est envoyé : tout reste sur cet appareil (seuls votre nom et la langue choisie sont gardés). Recharger la page remet l'exercice à zéro.",
   loggedOut:"Vous êtes déconnecté(e). Si vous quittez le poste, verrouillez aussi l'écran : touche Windows + L.",
-  cpTitle:'Fiche du cas', cpMeasures:'Ce qui a été mesuré', cpPaper:'Fiche papier (valeurs exactes)', cpTasks:'À faire', cpHint:"Indice pour l'étape en cours", cpRestart:'Recommencer ce cas', offFirst:"Après une première ouverture avec internet, l'exercice s'ouvre aussi sans internet sur cet appareil.", offReady:"✓ Gardé sur cet appareil : l'exercice s'ouvre aussi sans internet.", offHome:"Pour le retrouver facilement, ajoutez-le à l'écran d'accueil. Android : menu ⋮ → « Ajouter à l'écran d'accueil » ou « Installer l'application ». iPhone : dans Safari, Partager → « Sur l'écran d'accueil », puis ouvrez l'icône une fois avec internet.", offNo:"Ce navigateur ne peut pas garder l'exercice sur l'appareil : il faudra internet à chaque ouverture. Pour l'avoir aussi sans internet, ouvrez le lien dans Chrome (Android) ou Safari (iPhone).", brand:'Exercice', footer:'Exercice de formation · données fictives · ce n’est pas le système CURY', cpOpen:'Voir la fiche', cpCollapse:'Réduire', cpBarIdle:'Touchez pour voir le cas et les mesures.', stepWord:'Étape',
+  cpTitle:'Fiche du cas', cpMeasures:'Ce qui a été mesuré', cpPaper:'Fiche papier (valeurs exactes)', cpTasks:'À faire', cpHint:"Indice pour l'étape en cours", cpRestart:'Recommencer ce cas', offFirst:"Pas encore gardé dans ce navigateur. Quand « ✓ Gardé » s'affiche ici (quelques secondes avec internet), l'exercice s'ouvre aussi sans internet.", offReady:"✓ Gardé dans ce navigateur : l'exercice s'ouvre aussi sans internet.", offHome:"Pour le retrouver facilement, ajoutez-le à l'écran d'accueil. Android : menu ⋮ → « Ajouter à l'écran d'accueil » ou « Installer l'application ». iPhone : dans Safari, Partager → « Sur l'écran d'accueil » (sinon Safari peut effacer la copie après une semaine sans l'ouvrir), puis ouvrez l'icône une fois avec internet.", offNo:"Ce navigateur ne peut pas garder l'exercice : il faudra internet à chaque ouverture. Pour l'avoir aussi sans internet, ouvrez le lien dans Chrome (Android) ou Safari (iPhone).", brand:'Exercice', footer:'Exercice de formation · données fictives · ce n’est pas le système CURY', cpOpen:'Voir la fiche', cpCollapse:'Réduire', cpBarIdle:'Touchez pour voir le cas et les mesures.', stepWord:'Étape',
   phoneNote:"Sur téléphone : la fiche du cas (histoire, mesures, à faire) reste en bas de l'écran. Touchez-la pour l'ouvrir ou la réduire.",
   cpFreeText:"Dans CODE PATIENT, tapez « TEST » pour trouver un patient fictif (P26-TEST01 à P26-TEST08), ou créez un patient dans Accueil - Enregistrement. Inventez un cas ou utilisez une fiche papier. À la fin, l'exercice montre la priorité calculée et pourquoi (sans correction).",
   stepHint:'Tapez « TEST » pour trouver les patients fictifs (P26-TEST01 à P26-TEST08).', notFound:'Patient introuvable ?', createLink:"Créer un patient d'exercice",
@@ -936,7 +936,7 @@ var TXT = {
   nameLabel:'Your name (optional, for the result)', choose:'Choose an exercise', freeDesc:'Triage any TEST patient, without correction.',
   startNote:'Nothing is sent: everything stays on this device (only your name and the chosen language are kept). Reloading the page resets the practice.',
   loggedOut:'You are logged out. If you leave the computer, also lock the screen: Windows key + L.',
-  cpTitle:'Case card', cpMeasures:'What was measured', cpPaper:'Paper form (correct values)', cpTasks:'To do', cpHint:'Hint for this step', cpRestart:'Restart this case', offFirst:'After a first visit with internet, the practice also opens without internet on this device.', offReady:'✓ Saved on this device: the practice also opens without internet.', offHome:'To find it easily, add it to the home screen. Android: menu ⋮ → “Add to Home screen” or “Install app”. iPhone: in Safari, Share → “Add to Home Screen”, then open the icon once with internet.', offNo:'This browser cannot keep the practice on the device: it will need internet each time. To have it without internet too, open the link in Chrome (Android) or Safari (iPhone).', brand:'Practice', footer:'Training exercise · fictitious data · not the CURY system', cpOpen:'Show card', cpCollapse:'Hide', cpBarIdle:'Tap to see the case and the measurements.', stepWord:'Step',
+  cpTitle:'Case card', cpMeasures:'What was measured', cpPaper:'Paper form (correct values)', cpTasks:'To do', cpHint:'Hint for this step', cpRestart:'Restart this case', offFirst:'Not saved in this browser yet. When “✓ Saved” shows here (a few seconds with internet), the practice also opens without internet.', offReady:'✓ Saved in this browser: the practice also opens without internet.', offHome:'To find it easily, add it to the home screen. Android: menu ⋮ → “Add to Home screen” or “Install app”. iPhone: in Safari, Share → “Add to Home Screen” (otherwise Safari may erase the copy after a week without opening it), then open the icon once with internet.', offNo:'This browser cannot keep the practice: it will need internet each time. To have it without internet too, open the link in Chrome (Android) or Safari (iPhone).', brand:'Practice', footer:'Training exercise · fictitious data · not the CURY system', cpOpen:'Show card', cpCollapse:'Hide', cpBarIdle:'Tap to see the case and the measurements.', stepWord:'Step',
   phoneNote:'On a phone: the case card (story, measurements, to do) stays at the bottom of the screen. Tap it to open or hide it.',
   cpFreeText:'In PATIENT CODE, type “TEST” to find a fictitious patient (P26-TEST01 to P26-TEST08), or create a patient in Reception - Registration. Make up a case or use a paper form. At the end, the practice shows the calculated priority and why (no correction).',
   stepHint:'Type “TEST” to find the fictitious patients (P26-TEST01 to P26-TEST08).', notFound:'Patient not found?', createLink:'Create a practice patient',
@@ -2006,6 +2006,10 @@ document.addEventListener('focusout', function(){ setTimeout(function(){ if (!ty
 
 /* ---------- hors connexion (site web seulement : le fichier ouvert tel quel ne change pas) ---------- */
 var WEB = /^https?:$/.test(location.protocol);
+/* calculés seulement pour une adresse internet : sur about:blank, data: ou blob: (fichier ouvert par une autre application), new URL('./', …) échouerait */
+var HOME_URL = WEB ? new URL('./', location.href).href : '';
+var CACHE_PREFIX = WEB ? 'exercice-triage:' + new URL(HOME_URL).pathname + ':' : '';   /* même nom que dans sw.js */
+var LEGACY_CACHE = 'exercice-triage-v1';   /* nom du premier envoi (29/10/2026) : l'ancien service worker sert encore depuis cette copie */
 function standalone(){ return !!((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone); }
 function offNoteHTML(){
   if (S.offline === 'no') return esc(t('offNo'));
@@ -2023,17 +2027,32 @@ function keepCopy(){
 function checkOffline(){
   if (!window.caches || !caches.keys) return setOffline('no');
   caches.keys().then(function(keys){
-    var k = keys.filter(function(x){ return x.indexOf('exercice-triage-') === 0; });
-    if (!k.length) return null;
-    return caches.open(k[0]).then(function(c){ return c.match(new URL('./', location.href).href); });
-  }).then(function(r){ setOffline(r ? 'ready' : 'wait'); if (r) keepCopy(); }).catch(function(){});
+    var k = keys.filter(function(x){ return x.indexOf(CACHE_PREFIX) === 0 || x === LEGACY_CACHE; });
+    return Promise.all(k.map(function(n){ return caches.open(n).then(function(c){ return c.match(HOME_URL); }); }));
+  }).then(function(rs){
+    var r = rs.some(function(x){ return !!x; });
+    setOffline(r ? 'ready' : 'wait'); if (r) keepCopy();
+  }).catch(function(){});
 }
+var swTries = 0;
+function registerSW(again){
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    if (again && reg && reg.update){ try { var u = reg.update(); if (u && u.catch) u.catch(function(){}); } catch (e) {} }
+    return navigator.serviceWorker.ready;
+  }).then(checkOffline)
+    .catch(function(err){ if (err && err.name === 'SecurityError') setOffline('no'); });   /* une coupure réseau n'est pas un refus du navigateur */
+}
+/* copie pas encore faite (réseau coupé pendant l'enregistrement) : réessayer, 3 fois au plus, toutes les 15 s et au retour du réseau */
+function retrySW(){ if (S.offline === 'wait' && swTries < 3){ swTries++; registerSW(true); } }
 if (WEB){
   headLink('manifest', 'manifest.webmanifest');
   headLink('apple-touch-icon', 'apple-touch-icon.png');
   if ('serviceWorker' in navigator){
     S.offline = 'wait';
-    navigator.serviceWorker.register('sw.js').then(function(){ return navigator.serviceWorker.ready; }).then(checkOffline).catch(function(){ setOffline('no'); });
+    navigator.serviceWorker.addEventListener('controllerchange', checkOffline);   /* nouvelle version du service worker : la copie vient d'être refaite */
+    registerSW(false);
+    (function later(){ setTimeout(function(){ if (S.offline === 'wait' && swTries < 3){ retrySW(); later(); } }, 15000); })();
+    window.addEventListener('online', retrySW);
   } else S.offline = 'no';
 }
 

@@ -4,7 +4,6 @@
   "description": "Exercice de formation : écrans de triage, patients fictifs. Ce n'est pas le système CURY.",
   "lang": "fr",
   "dir": "ltr",
-  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
